@@ -9,6 +9,7 @@ import {
 import AuthLayout from '../layouts/AuthLayout';
 import DashboardLayout from '../layouts/DashboardLayout';
 import ProtectedRoute from './ProtectedRoute';
+import ErrorPage from '../components/ErrorPage';
 
 /* ── Lazy-loaded Pages ───────────────────────────────────────── */
 const LoginPage = lazy(
@@ -23,8 +24,23 @@ const DashboardPage = lazy(
 const ProfilePage = lazy(
   () => import('../features/profile/components/ProfilePage'),
 );
-const FeedbackPage = lazy(
-  () => import('../features/feedback/components/FeedbackPage'),
+const CoursesPage = lazy(
+  () => import('../features/courses/components/CoursesPage'),
+);
+const MarketingPage = lazy(
+  () => import('../features/marketing/components/MarketingPage'),
+);
+const PortfoliosPage = lazy(
+  () => import('../features/portfolios/components/PortfoliosPage'),
+);
+const ClassesPage = lazy(
+  () => import('../features/classes/components/ClassesPage'),
+);
+const EventsPage = lazy(
+  () => import('../features/events/components/EventsPage'),
+);
+const ExaminationsPage = lazy(
+  () => import('../features/examinations/components/ExaminationsPage'),
 );
 
 /* ── Loading Fallback ────────────────────────────────────────── */
@@ -44,6 +60,7 @@ const routes: RouteObject[] = [
   // Public / Auth routes
   {
     element: <AuthLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/login',
@@ -67,6 +84,7 @@ const routes: RouteObject[] = [
   // Protected / Dashboard routes
   {
     element: <ProtectedRoute />,
+    errorElement: <ErrorPage />,
     children: [
       {
         element: <DashboardLayout />,
@@ -88,10 +106,50 @@ const routes: RouteObject[] = [
             ),
           },
           {
-            path: '/dashboard/feedback',
+            path: '/dashboard/courses',
             element: (
               <Suspended>
-                <FeedbackPage />
+                <CoursesPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: '/dashboard/marketing',
+            element: (
+              <Suspended>
+                <MarketingPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: '/dashboard/portfolios',
+            element: (
+              <Suspended>
+                <PortfoliosPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: '/dashboard/classes',
+            element: (
+              <Suspended>
+                <ClassesPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: '/dashboard/events',
+            element: (
+              <Suspended>
+                <EventsPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: '/dashboard/examinations',
+            element: (
+              <Suspended>
+                <ExaminationsPage />
               </Suspended>
             ),
           },
