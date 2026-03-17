@@ -1,47 +1,303 @@
-import React from 'react';
-import { useAuthStore } from '../../../store/authStore';
+import React, { useState } from 'react';
+import { 
+  Home, ChevronRight, User, Mail, Lock, 
+  Camera, Github, Linkedin, Globe, ShieldCheck, 
+  Save, MapPin, Briefcase, Key, Bell
+} from 'lucide-react';
 
-const ProfilePage: React.FC = () => {
-  const user = useAuthStore((s) => s.user);
+const EditProfilePage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'general' | 'professional' | 'security'>('general');
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Student Profile</h1>
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
       
-      {user ? (
-        <div className="space-y-4">
-          <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
-            <div className="h-16 w-16 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-2xl">
-              {user.firstName[0]}{user.lastName[0]}
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">
-                {user.firstName} {user.lastName}
-              </h2>
-              <p className="text-sm text-gray-500">{user.email}</p>
-            </div>
-          </div>
+      {/* ================= HEADER & BREADCRUMBS ================= */}
+      <div className="bg-black text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-gray-800">
+        <div className="max-w-7xl mx-auto">
+          {/* Breadcrumb */}
+          <nav className="flex items-center text-sm text-gray-400 mb-4">
+            <a href="#" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
+              <Home size={14} /> Home
+            </a>
+            <ChevronRight size={14} className="mx-2" />
+            <span className="text-white">Edit Profile</span>
+          </nav>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">First Name</label>
-              <div className="text-gray-900 bg-gray-50 p-2 rounded-lg border border-gray-100">{user.firstName}</div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Last Name</label>
-              <div className="text-gray-900 bg-gray-50 p-2 rounded-lg border border-gray-100">{user.lastName}</div>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-500 mb-1">Email Address</label>
-              <div className="text-gray-900 bg-gray-50 p-2 rounded-lg border border-gray-100">{user.email}</div>
-            </div>
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
+              Account <span className="text-[#f7941d]">Settings</span>
+            </h1>
+            <p className="text-gray-400 text-sm max-w-xl">
+              Manage your personal information, professional links, and security preferences.
+            </p>
           </div>
         </div>
-      ) : (
-        <p className="text-gray-600">Loading profile information...</p>
-      )}
+      </div>
+
+      {/* ================= MAIN CONTENT ================= */}
+      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="flex flex-col lg:flex-row gap-8">
+          
+          {/* ── Left Sidebar (Tabs) ─────────────────────────────── */}
+          <div className="lg:w-64 shrink-0">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-2 sticky top-6">
+              <nav className="space-y-1">
+                <button
+                  onClick={() => setActiveTab('general')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                    activeTab === 'general' 
+                      ? 'bg-[#f7941d] text-black shadow-md' 
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                  }`}
+                >
+                  <User size={18} /> General Info
+                </button>
+                <button
+                  onClick={() => setActiveTab('professional')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                    activeTab === 'professional' 
+                      ? 'bg-[#f7941d] text-black shadow-md' 
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                  }`}
+                >
+                  <Briefcase size={18} /> Professional Profile
+                </button>
+                <button
+                  onClick={() => setActiveTab('security')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                    activeTab === 'security' 
+                      ? 'bg-[#f7941d] text-black shadow-md' 
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                  }`}
+                >
+                  <ShieldCheck size={18} /> Security
+                </button>
+              </nav>
+            </div>
+          </div>
+
+          {/* ── Right Content Area ──────────────────────────────── */}
+          <div className="flex-1">
+            
+            {/* --- GENERAL INFO TAB --- */}
+            {activeTab === 'general' && (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="p-6 sm:p-8 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900">General Information</h2>
+                  <p className="text-sm text-gray-500 mt-1">Update your photo and personal details here.</p>
+                </div>
+                
+                <div className="p-6 sm:p-8 space-y-8">
+                  {/* Avatar Upload */}
+                  <div className="flex items-center gap-6">
+                    <div className="relative group cursor-pointer">
+                      <div className="h-24 w-24 rounded-full bg-black text-[#f7941d] flex items-center justify-center text-3xl font-black shadow-lg overflow-hidden border-4 border-white ring-2 ring-gray-100">
+                        MB
+                      </div>
+                      <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera size={24} className="text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex gap-3 mb-2">
+                        <button className="px-4 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors">
+                          Upload New
+                        </button>
+                        <button className="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors">
+                          Remove
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-500">Recommended: Square JPG, PNG, or GIF, at least 400x400px.</p>
+                    </div>
+                  </div>
+
+                  {/* Form Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-bold text-gray-700">First Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input type="text" defaultValue="Michael" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-bold text-gray-700">Last Name</label>
+                      <div className="relative">
+                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input type="text" defaultValue="Balogun" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-bold text-gray-700">Username</label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium text-sm">@</span>
+                        <input type="text" defaultValue="michaelb" className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-bold text-gray-700">Email Address</label>
+                      <div className="relative">
+                        <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input type="email" defaultValue="student@example.com" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <label className="text-sm font-bold text-gray-700">Location</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input type="text" defaultValue="Ikorodu, Nigeria" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end">
+                  <button className="flex items-center gap-2 px-6 py-2.5 bg-black text-[#f7941d] font-bold rounded-xl hover:bg-gray-900 transition-colors shadow-md">
+                    <Save size={18} /> Save Changes
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* --- PROFESSIONAL PROFILE TAB --- */}
+            {activeTab === 'professional' && (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="p-6 sm:p-8 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900">Professional Profile</h2>
+                  <p className="text-sm text-gray-500 mt-1">These details will be displayed on your approved academy portfolios.</p>
+                </div>
+                
+                <div className="p-6 sm:p-8 space-y-6">
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-bold text-gray-700">Professional Headline</label>
+                    <div className="relative">
+                      <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input type="text" defaultValue="Frontend Developer" placeholder="e.g. Digital Marketer or Web Developer" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-bold text-gray-700">Short Bio</label>
+                    <textarea 
+                      rows={4} 
+                      defaultValue="Frontend Developer specializing in React, TypeScript, and Next.js. Passionate about building accessible and scalable web applications."
+                      placeholder="Tell us a bit about your skills and goals..."
+                      className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all resize-none"
+                    ></textarea>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100 space-y-6">
+                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Social Links</h3>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-bold text-gray-700">GitHub Profile</label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-0 pl-3.5 flex items-center justify-center pointer-events-none text-gray-400">
+                          <Github size={18} />
+                        </span>
+                        <input type="url" placeholder="https://github.com/yourusername" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-bold text-gray-700">LinkedIn Profile</label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-0 pl-3.5 flex items-center justify-center pointer-events-none text-gray-400">
+                          <Linkedin size={18} />
+                        </span>
+                        <input type="url" placeholder="https://linkedin.com/in/yourusername" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-sm font-bold text-gray-700">Personal Website</label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-0 pl-3.5 flex items-center justify-center pointer-events-none text-gray-400">
+                          <Globe size={18} />
+                        </span>
+                        <input type="url" placeholder="https://yourportfolio.com" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end">
+                  <button className="flex items-center gap-2 px-6 py-2.5 bg-black text-[#f7941d] font-bold rounded-xl hover:bg-gray-900 transition-colors shadow-md">
+                    <Save size={18} /> Save Profile
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* --- SECURITY TAB --- */}
+            {activeTab === 'security' && (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <div className="p-6 sm:p-8 border-b border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900">Security Settings</h2>
+                  <p className="text-sm text-gray-500 mt-1">Update your password to keep your account secure.</p>
+                </div>
+                
+                <div className="p-6 sm:p-8 space-y-6">
+                  
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 mb-6">
+                    <ShieldCheck className="text-amber-500 shrink-0 mt-0.5" size={20} />
+                    <div>
+                      <h4 className="text-sm font-bold text-amber-900">Password Recommendation</h4>
+                      <p className="text-xs text-amber-700 mt-1">If you are still using the default password provided on your enrollment receipt, please change it immediately to ensure your course progress is safe.</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-bold text-gray-700">Current Password</label>
+                    <div className="relative">
+                      <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input type="password" placeholder="Enter current password" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 pt-4 border-t border-gray-100">
+                    <label className="text-sm font-bold text-gray-700">New Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input type="password" placeholder="Create new password" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-bold text-gray-700">Confirm New Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      <input type="password" placeholder="Confirm new password" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                    </div>
+                  </div>
+                  
+                </div>
+
+                <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end">
+                  <button className="flex items-center gap-2 px-6 py-2.5 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors shadow-md">
+                    <ShieldCheck size={18} className="text-[#f7941d]" /> Update Password
+                  </button>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      </main>
+
+      {/* ================= FOOTER ================= */}
+      <footer className="bg-white border-t border-gray-200 py-6 px-4 text-center mt-auto">
+        <p className="text-sm text-gray-500 font-medium">
+          Digital World Tech Academy © 2026
+        </p>
+      </footer>
+
     </div>
   );
 };
 
-export default ProfilePage;
+export default EditProfilePage;
