@@ -21,9 +21,6 @@ const MOCK_USER = {
 
 const MOCK_TOKEN = 'mock-jwt-token-abc123def456';
 
-const VALID_EMAIL = 'student@university.edu';
-const VALID_PASSWORD = 'password123';
-
 // ── Service Functions ──────────────────────────────────────────────────
 
 /**
@@ -39,16 +36,13 @@ export async function loginUser(
   // Simulate network latency
   await mockDelay(null, 600);
 
-  // Validate credentials against mock data
-  if (
-    credentials.email.toLowerCase() !== VALID_EMAIL ||
-    credentials.password !== VALID_PASSWORD
-  ) {
-    throw new Error('Invalid email or password. Please try again.');
-  }
-
+  // ACCEPT ALL: In mock mode, we grant access to any credentials provided.
+  // This helps with rapid testing and demonstration.
   return {
-    user: MOCK_USER,
+    user: {
+      ...MOCK_USER,
+      email: credentials.email.toLowerCase(),
+    },
     token: MOCK_TOKEN,
   };
 }
