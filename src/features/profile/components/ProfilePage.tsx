@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Home, ChevronRight, User, Mail, Lock, 
   Camera, Github, Linkedin, Globe, ShieldCheck, 
-  Save, MapPin, Briefcase, Key, Bell
+  Save, MapPin, Briefcase, Key
 } from 'lucide-react';
 
 const EditProfilePage: React.FC = () => {

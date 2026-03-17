@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react';
+import React, { lazy, Suspense } from 'react';
+// import { lazy, Suspense } from 'react';
 import {
   createBrowserRouter,
   Navigate,
@@ -59,17 +60,18 @@ const Suspended = ({ children }: { children: React.ReactNode }) => (
 const routes: RouteObject[] = [
   // Public / Auth routes
   {
+    path: '/login',
+    element: (
+      <Suspended>
+        <LoginPage />
+      </Suspended>
+    ),
+    errorElement: <ErrorPage />,
+  },
+  {
     element: <AuthLayout />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        path: '/login',
-        element: (
-          <Suspended>
-            <LoginPage />
-          </Suspended>
-        ),
-      },
       {
         path: '/forgot-password',
         element: (
