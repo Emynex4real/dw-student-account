@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Home, ChevronRight, Calendar, Clock, MapPin, 
-  Users, Search, Filter, CalendarPlus, ExternalLink,
+  Users, Search, Filter, CalendarPlus,
   Crown, Ticket
 } from 'lucide-react';
 

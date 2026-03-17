@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  Home, ChevronRight, Briefcase, Plus, 
+  Home, ChevronRight, Plus, 
   ExternalLink, Github, LayoutTemplate, 
   CheckCircle, Clock, X
 } from 'lucide-react';

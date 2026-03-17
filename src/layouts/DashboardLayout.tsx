@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { 
   Search, Bell, User, LayoutDashboard, BookOpen, 
-  Briefcase, Users, Calendar, FileText, LogOut, Menu, X 
+  Briefcase, Users, Calendar, FileText, LogOut, Menu, X, Crown
 } from 'lucide-react';
 
 const navItems = [
@@ -16,14 +16,11 @@ const navItems = [
   { to: '/dashboard/examinations', label: 'Examinations', icon: <FileText size={20} /> },
 ];
 
-/**
- * DashboardLayout — authenticated area with a collapsible sidebar,
- * top header showing real user info, and main content area via <Outlet />.
- */
 const DashboardLayout: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const navigate = useNavigate();
+  
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
 
@@ -32,13 +29,8 @@ const DashboardLayout: React.FC = () => {
     navigate('/login', { replace: true });
   };
 
-  const displayName = user
-    ? `${user.firstName} ${user.lastName}`
-    : 'Student';
-
-  const initials = user
-    ? `${user.firstName[0]}${user.lastName[0]}`
-    : 'S';
+  const displayName = user ? `${user.firstName} ${user.lastName}` : 'Student';
+  const initials = user ? `${user.firstName[0]}${user.lastName[0]}` : 'S';
 
   // --- Mock Data ---
   const notifications = [
@@ -49,132 +41,175 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <div className="flex h-screen w-full bg-gray-50 font-sans text-gray-900 overflow-hidden">
+      
+      {/* ── Mobile Overlay Backdrop ─────────────────────────────── */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* ── Sidebar ─────────────────────────────────────────────── */}
       <aside
         className={`${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-50 w-64 bg-black text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 flex flex-col`}
+        } fixed inset-y-0 left-0 z-50 w-64 bg-black text-white transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 flex flex-col shadow-2xl lg:shadow-none`}
       >
         {/* Logo area */}
-        <div className="flex h-16 items-center justify-between px-6 border-b border-gray-800">
-          <span className="text-lg font-bold tracking-wider text-[#f7941d]">
+        <div className="flex h-16 items-center justify-between px-6 border-b border-gray-800 shrink-0">
+          <span className="text-lg font-black tracking-wider text-[#f7941d]">
             DIGITAL WORLD
           </span>
           <button
-            className="lg:hidden text-gray-400 hover:text-white"
+            className="lg:hidden p-1 text-gray-400 hover:text-white hover:bg-gray-800 rounded-md transition-colors"
             onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1 custom-scrollbar">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.to === '/dashboard'}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                `flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#f7941d]/10 text-[#f7941d]'
-                    : 'text-gray-400 hover:bg-gray-900 hover:text-white'
+                    ? 'bg-[#f7941d] text-black font-bold shadow-md shadow-[#f7941d]/10'
+                    : 'text-gray-400 font-medium hover:bg-gray-900 hover:text-white'
                 }`
               }
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {item.icon}
-              <span className="font-medium text-sm">{item.label}</span>
+              <span className="text-sm">{item.label}</span>
             </NavLink>
           ))}
         </nav>
 
         {/* Footer — Logout */}
-        <div className="p-4 border-t border-gray-800">
+        <div className="p-4 border-t border-gray-800 shrink-0">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-gray-400 hover:bg-gray-900 hover:text-[#f7941d] transition-colors"
+            className="flex items-center gap-3 px-3 py-3 w-full rounded-xl text-gray-400 font-medium hover:bg-gray-900 hover:text-red-400 transition-colors group"
           >
-            <LogOut size={20} />
-            <span className="font-medium text-sm">Logout</span>
+            <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm">Logout</span>
           </button>
         </div>
       </aside>
 
-      {/* ── Main Content ─────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      {/* ── Main Content Wrapper ────────────────────────────────── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        
         {/* Top Header */}
-        <header className="flex h-16 items-center justify-between bg-white px-4 lg:px-8 border-b border-gray-200">
-          <div className="flex items-center gap-4">
+        <header className="flex h-16 items-center justify-between bg-white px-4 lg:px-8 border-b border-gray-200 shrink-0 z-30">
+          
+          {/* Left: Mobile Toggle & Desktop Search */}
+          <div className="flex items-center gap-4 flex-1">
             <button
-              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-md"
+              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 hover:text-black rounded-lg transition-colors"
               onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open menu"
             >
-              <Menu size={20} />
+              <Menu size={24} />
             </button>
-            <h1 className="text-xl font-bold text-gray-800 hidden sm:block">Dashboard</h1>
-          </div>
-
-          <div className="flex items-center gap-4 sm:gap-6">
-            {/* Search */}
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            
+            <div className="relative hidden md:block max-w-md w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
                 type="text"
-                placeholder="search something..."
-                className="w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d]/50 focus:border-[#f7941d] transition-all"
+                placeholder="Search courses, events, or portfolios..."
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d]/50 focus:border-[#f7941d] focus:bg-white transition-all"
               />
             </div>
+          </div>
 
+          {/* Right: Notifications & Profile */}
+          <div className="flex items-center justify-end gap-2 sm:gap-6">
+            
             {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                className="relative p-2.5 text-gray-500 hover:bg-gray-100 hover:text-black rounded-xl transition-colors"
+                aria-label="View notifications"
               >
                 <Bell size={20} />
-                <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#f7941d] text-[10px] font-bold text-white ring-2 ring-white">
-                  3
-                </span>
+                <span className="absolute top-2 right-2 flex h-2.5 w-2.5 items-center justify-center rounded-full bg-[#f7941d] ring-2 ring-white animate-pulse"></span>
               </button>
 
               {/* Notifications Dropdown */}
               {showNotifications && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden">
-                  <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                    <h3 className="font-semibold text-gray-900">User Notifications</h3>
-                    <span className="text-xs font-medium text-[#f7941d] bg-[#f7941d]/10 px-2 py-1 rounded-md">3 New</span>
+                <>
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setShowNotifications(false)} 
+                  />
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                    <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                      <h3 className="font-bold text-gray-900">Notifications</h3>
+                      <span className="text-xs font-bold text-[#f7941d] bg-[#f7941d]/10 px-2.5 py-1 rounded-md">3 New</span>
+                    </div>
+                    <div className="max-h-[60vh] overflow-y-auto">
+                      {notifications.map((notif) => (
+                        <div key={notif.id} className="p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer group">
+                          <p className="text-sm font-medium text-gray-800 group-hover:text-black">{notif.text}</p>
+                          <p className="text-xs text-gray-400 mt-1.5 font-medium">{notif.time}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="p-3 bg-gray-50/50 text-center border-t border-gray-100">
+                      <button className="text-sm font-bold text-[#f7941d] hover:text-[#d67e15] transition-colors">
+                        Mark all as read
+                      </button>
+                    </div>
                   </div>
-                  <div className="max-h-64 overflow-y-auto">
-                    {notifications.map((notif) => (
-                      <div key={notif.id} className="p-4 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                        <p className="text-sm text-gray-800">{notif.text}</p>
-                        <p className="text-xs text-gray-400 mt-1">{notif.time}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                </>
               )}
             </div>
 
-            {/* Profile */}
-            <div className="flex items-center gap-3 border-l border-gray-200 pl-4 sm:pl-6 cursor-pointer group" onClick={() => navigate('/dashboard/profile')}>
-              <div className="h-9 w-9 rounded-full bg-black flex items-center justify-center text-[#f7941d] overflow-hidden ring-2 ring-transparent group-hover:ring-[#f7941d] transition-all">
+            {/* Profile Dropdown Trigger */}
+            <div 
+              className="flex items-center gap-3 border-l border-gray-200 pl-4 sm:pl-6 cursor-pointer group" 
+              onClick={() => navigate('/dashboard/profile')}
+            >
+              <div className="hidden sm:flex flex-col items-end">
+                <p className="text-sm font-bold text-gray-900 group-hover:text-[#f7941d] transition-colors">
+                  {displayName}
+                </p>
+                <span className="flex items-center gap-1 text-[10px] font-bold text-[#f7941d] uppercase tracking-wider">
+                  <Crown size={10} /> Pro
+                </span>
+              </div>
+              <div className="h-10 w-10 rounded-xl bg-black flex items-center justify-center text-[#f7941d] font-bold shadow-sm group-hover:scale-105 group-hover:shadow-md transition-all">
                 {user ? initials : <User size={18} />}
               </div>
-              <div className="hidden sm:block">
-                <p className="text-sm font-semibold text-gray-900 group-hover:text-[#f7941d] transition-colors">{displayName}</p>
-              </div>
             </div>
+            
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
+        {/* ── Page Content (Outlet) ──────────────────────────────── */}
+        <main className="flex-1 overflow-y-auto bg-gray-50 relative custom-scrollbar">
           <Outlet />
         </main>
+        
       </div>
+
+      {/* Global Scrollbar Styles */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 20px; }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb { background-color: #d1d5db; }
+      `}} />
     </div>
   );
 };
