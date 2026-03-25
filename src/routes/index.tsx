@@ -43,6 +43,18 @@ const EventsPage = lazy(
 const ExaminationsPage = lazy(
   () => import('../features/examinations/components/ExaminationsPage'),
 );
+const ExamInstructionsWrapper = lazy(
+  () => import('../features/examinations/components/ExamInstructionsWrapper'),
+);
+const ExamInterface = lazy(
+  () => import('../features/examinations/components/ExamInterface'),
+);
+const ExamResults = lazy(
+  () => import('../features/examinations/components/ExamResults'),
+);
+const ExamReview = lazy(
+  () => import('../features/examinations/components/ExamReview'),
+);
 
 /* ── Loading Fallback ────────────────────────────────────────── */
 const PageLoader: React.FC = () => (
@@ -155,6 +167,52 @@ const routes: RouteObject[] = [
               </Suspended>
             ),
           },
+        ],
+      },
+      // Exam routes (outside dashboard layout for full-screen)
+      {
+        path: '/exams/:examId/instructions',
+        element: (
+          <Suspended>
+            <ExamInstructionsWrapper />
+          </Suspended>
+        ),
+      },
+      {
+        path: '/exams/:examId/take',
+        element: (
+          <Suspended>
+            <ExamInterface />
+          </Suspended>
+        ),
+      },
+      {
+        path: '/exams/:examId/results',
+        element: (
+          <Suspended>
+            <ExamResults />
+          </Suspended>
+        ),
+      },
+      {
+        path: '/exams/:examId/review',
+        element: (
+          <Suspended>
+            <ExamReview />
+          </Suspended>
+        ),
+      },
+      {
+        path: '/exams',
+        element: (
+          <Suspended>
+            <ExaminationsPage />
+          </Suspended>
+        ),
+      },
+      {
+        element: <DashboardLayout />,
+        children: [
         ],
       },
     ],

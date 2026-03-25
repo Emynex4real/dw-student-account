@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Home, ChevronRight, FileText, Clock, Award, 
   AlertTriangle, CheckCircle, Lock, PlayCircle, 
@@ -45,8 +46,12 @@ const mockCompletedExams = [
 ];
 
 const ExaminationsPage: React.FC = () => {
-  // Toggle this to true to see the populated state!
+  const navigate = useNavigate();
   const [hasExams, setHasExams] = useState(false);
+
+  const handleStartExam = (examId: number) => {
+    navigate(`/exams/${examId}/instructions`);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
@@ -175,7 +180,10 @@ const ExaminationsPage: React.FC = () => {
                         <p className="text-sm font-medium text-gray-500">
                           Pass mark: <span className="text-black font-bold">{exam.passingScore}</span>
                         </p>
-                        <button className="bg-[#f7941d] text-black font-bold py-2.5 px-6 rounded-xl hover:bg-[#d67e15] transition-colors flex items-center gap-2 shadow-md">
+                        <button 
+                          onClick={() => handleStartExam(exam.id)}
+                          className="bg-[#f7941d] text-black font-bold py-2.5 px-6 rounded-xl hover:bg-[#d67e15] transition-colors flex items-center gap-2 shadow-md"
+                        >
                           Start Exam <ArrowRight size={18} />
                         </button>
                       </div>
