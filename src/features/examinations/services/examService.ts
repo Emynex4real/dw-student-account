@@ -378,7 +378,7 @@ export const examService = {
         const score = (earnedPoints / totalPoints) * 100;
         
         resolve({
-          examId,
+          examId: _examId,
           studentId: 'student-123',
           score,
           totalPoints,
