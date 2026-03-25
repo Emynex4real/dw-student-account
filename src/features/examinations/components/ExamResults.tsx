@@ -2,11 +2,11 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   Award, TrendingUp, Clock, CheckCircle, XCircle, 
-  Home, Eye, Download, Share2 
+  Home, Eye, Download
 } from 'lucide-react';
 import type { ExamResult } from '../types/exam.types';
 
-const ExamResults: React.FC = () => {
+export const ExamResults: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const result = location.state?.result as ExamResult;

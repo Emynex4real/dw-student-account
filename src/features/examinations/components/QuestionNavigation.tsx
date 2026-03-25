@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flag, CheckCircle, Circle } from 'lucide-react';
+import { Flag } from 'lucide-react';
 import { useExamStore } from '../store/examStore';
 
 export const QuestionNavigation: React.FC = () => {

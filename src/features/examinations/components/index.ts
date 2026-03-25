@@ -1,9 +1,9 @@
-export { ExaminationsPage } from './ExaminationsPage';
+export { default as ExaminationsPage } from './ExaminationsPage';
 export { ExamInstructions } from './ExamInstructions';
-export { ExamInstructionsWrapper } from './ExamInstructionsWrapper';
-export { ExamInterface } from './ExamInterface';
-export { ExamResults } from './ExamResults';
-export { ExamReview } from './ExamReview';
+export { default as ExamInstructionsWrapper } from './ExamInstructionsWrapper';
+export { default as ExamInterface } from './ExamInterface';
+export { default as ExamResults } from './ExamResults';
+export { default as ExamReview } from './ExamReview';
 export { ExamTimer } from './ExamTimer';
 export { QuestionDisplay } from './QuestionDisplay';
 export { QuestionNavigation } from './QuestionNavigation';

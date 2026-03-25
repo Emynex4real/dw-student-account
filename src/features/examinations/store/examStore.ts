@@ -33,7 +33,6 @@ export const useExamStore = create<ExamStore>()(
       session: null,
 
       startExam: (exam: Exam) => {
-        const totalQuestions = exam.sections.reduce((acc, section) => acc + section.questions.length, 0);
         const answers: Answer[] = [];
         
         exam.sections.forEach(section => {

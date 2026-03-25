@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Home, CheckCircle, XCircle, Flag, Code } from 'lucide-react';
+import { Home, CheckCircle, XCircle, Code } from 'lucide-react';
 import type { Exam, ExamResult } from '../types/exam.types';
 import { examService } from '../services/examService';
 
-const ExamReview: React.FC = () => {
+export const ExamReview: React.FC = () => {
   const navigate = useNavigate();
   const { examId } = useParams();
   const [exam, setExam] = useState<Exam | null>(null);
-  const [result, setResult] = useState<ExamResult | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

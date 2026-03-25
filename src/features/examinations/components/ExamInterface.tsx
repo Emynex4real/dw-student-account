@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
   ChevronLeft, ChevronRight, Flag, Send, AlertTriangle,
-  Maximize, Eye, Save
+  Maximize, Save
 } from 'lucide-react';
 import { useExamStore } from '../store/examStore';
 import { useExamTimer } from '../hooks/useExamTimer';
@@ -13,9 +13,8 @@ import { QuestionNavigation } from './QuestionNavigation';
 import { QuestionDisplay } from './QuestionDisplay';
 import { examService } from '../services/examService';
 
-const ExamInterface: React.FC = () => {
+export const ExamInterface: React.FC = () => {
   const navigate = useNavigate();
-  const { examId } = useParams();
   const { currentExam, session, navigateToQuestion, toggleFlag, clearSession } = useExamStore();
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [showTabWarning, setShowTabWarning] = useState(false);
