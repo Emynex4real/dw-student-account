@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Home, CheckCircle, XCircle, Code } from 'lucide-react';
-import type { Exam, ExamResult } from '../types/exam.types';
+import type { Exam } from '../types/exam.types';
 import { examService } from '../services/examService';
 
 export const ExamReview: React.FC = () => {

@@ -365,16 +365,12 @@ export const mockExamData: Exam = {
 
 export const examService = {
   getExam: async (examId: string): Promise<Exam> => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _examId = examId;
     return new Promise((resolve) => {
       setTimeout(() => resolve(mockExamData), 500);
     });
   },
 
   submitExam: async (examId: string, answers: any[]): Promise<ExamResult> => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _examId = examId;
     return new Promise((resolve) => {
       setTimeout(() => {
         const totalPoints = 100;
@@ -401,11 +397,7 @@ export const examService = {
     });
   },
 
-  saveProgress: async (examId: string, session: any): Promise<void> => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _examId = examId;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _session = session;
+  saveProgress: async (): Promise<void> => {
     return new Promise((resolve) => {
       setTimeout(() => resolve(), 200);
     });

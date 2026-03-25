@@ -11,7 +11,7 @@ export const useAutoSave = (interval: number = 30000) => {
 
     const autoSave = async () => {
       try {
-        await examService.saveProgress(session.examId, session);
+        await examService.saveProgress();
         saveSession();
       } catch (error) {
         console.error('Auto-save failed:', error);
