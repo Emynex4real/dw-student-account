@@ -13,7 +13,7 @@ export const ExamReview: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const examData = await examService.getExam(examId!);
+        const examData = await examService.getExam();
         setExam(examData);
         // In real app, fetch result from API
         // For now, we'll use mock data

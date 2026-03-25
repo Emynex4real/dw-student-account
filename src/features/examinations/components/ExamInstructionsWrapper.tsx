@@ -13,7 +13,7 @@ const ExamInstructionsWrapper: React.FC = () => {
   useEffect(() => {
     const loadExam = async () => {
       try {
-        const examData = await examService.getExam(examId!);
+        const examData = await examService.getExam();
         setExam(examData);
         setLoading(false);
       } catch (error) {

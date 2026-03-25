@@ -364,13 +364,13 @@ export const mockExamData: Exam = {
 };
 
 export const examService = {
-  getExam: async (examId: string): Promise<Exam> => {
+  getExam: async (): Promise<Exam> => {
     return new Promise((resolve) => {
       setTimeout(() => resolve(mockExamData), 500);
     });
   },
 
-  submitExam: async (examId: string, answers: any[]): Promise<ExamResult> => {
+  submitExam: async (_examId: string, answers: any[]): Promise<ExamResult> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const totalPoints = 100;
