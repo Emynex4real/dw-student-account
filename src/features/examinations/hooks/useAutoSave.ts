@@ -4,7 +4,7 @@ import { examService } from '../services/examService';
 
 export const useAutoSave = (interval: number = 30000) => {
   const { session, saveSession } = useExamStore();
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!session) return;

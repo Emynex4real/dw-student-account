@@ -3,7 +3,7 @@ import { useExamStore } from '../store/examStore';
 
 export const useExamTimer = (onTimeUp: () => void) => {
   const { session, updateTimeRemaining } = useExamStore();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!session) return;
