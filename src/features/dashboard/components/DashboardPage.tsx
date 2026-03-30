@@ -1,43 +1,45 @@
 import React from 'react';
-import { 
-  BookOpen, Briefcase, User, 
+import { useNavigate, Link } from 'react-router-dom';
+import {
+  BookOpen, Briefcase, User,
   ChevronRight, ShieldCheck, GraduationCap,
   TrendingUp, Clock, Award, ArrowRight, PlayCircle, CheckCircle
 } from 'lucide-react';
 
-// --- Mock Data: Realistic entries remove the "AI template" feel ---
 const recentActivities = [
-  { 
-    id: 1, 
-    title: "Completed Module 4: React Server Components", 
-    time: "2 hours ago", 
-    course: "Advanced Next.js Architecture", 
+  {
+    id: 1,
+    title: "Completed Module 4: React Server Components",
+    time: "2 hours ago",
+    course: "Advanced Next.js Architecture",
     status: "Completed",
     icon: <CheckCircle size={20} className="text-green-600" />
   },
-  { 
-    id: 2, 
-    title: "Submitted Assignment: Dynamic Routing", 
-    time: "Yesterday", 
-    course: "React & TypeScript Mastery", 
+  {
+    id: 2,
+    title: "Submitted Assignment: Dynamic Routing",
+    time: "Yesterday",
+    course: "React & TypeScript Mastery",
     status: "Graded",
     icon: <Award size={20} className="text-purple-600" />
   },
-  { 
-    id: 3, 
-    title: "Watched: State Management Patterns", 
-    time: "2 days ago", 
-    course: "Frontend Architecture", 
+  {
+    id: 3,
+    title: "Watched: State Management Patterns",
+    time: "2 days ago",
+    course: "Frontend Architecture",
     status: "In Progress",
     icon: <PlayCircle size={20} className="text-[#f7941d]" />
   }
 ];
 
 const DashboardPage: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 lg:p-8 font-sans text-gray-900">
       <div className="max-w-7xl mx-auto space-y-8">
-        
+
         {/* ================= WELCOME BANNER ================= */}
         <div className="relative overflow-hidden rounded-2xl bg-black p-8 lg:p-10 text-white shadow-xl border border-gray-800">
           <div className="relative z-10 max-w-2xl">
@@ -52,21 +54,25 @@ const DashboardPage: React.FC = () => {
             <p className="text-gray-400 text-base leading-relaxed mb-8 max-w-xl">
               You're currently on a 4-day learning streak. Keep up the momentum and track your latest progress below.
             </p>
-            
-            {/* Quick action pills */}
+
             <div className="flex flex-wrap gap-4">
-              <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f7941d] text-black rounded-xl font-bold text-sm hover:bg-[#d67e15] transition-colors shadow-lg shadow-[#f7941d]/20">
+              <button
+                onClick={() => navigate('/dashboard/marketing')}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f7941d] text-black rounded-xl font-bold text-sm hover:bg-[#d67e15] transition-colors shadow-lg shadow-[#f7941d]/20"
+              >
                 <BookOpen size={18} />
                 Continue Learning
               </button>
-              <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 border border-gray-700 text-white rounded-xl font-medium text-sm hover:bg-gray-800 hover:border-gray-600 transition-colors">
+              <button
+                onClick={() => navigate('/dashboard/courses')}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 border border-gray-700 text-white rounded-xl font-medium text-sm hover:bg-gray-800 hover:border-gray-600 transition-colors"
+              >
                 <TrendingUp size={18} />
                 View Progress
               </button>
             </div>
           </div>
-          
-          {/* Subtle Decorative elements (toned down from the AI version) */}
+
           <div className="absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-[#f7941d] opacity-[0.07] blur-3xl pointer-events-none"></div>
           <div className="absolute inset-0 opacity-[0.03]" style={{
             backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
@@ -76,7 +82,7 @@ const DashboardPage: React.FC = () => {
 
         {/* ================= QUICK STATS GRID ================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
+
           <div className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md hover:border-[#f7941d]/50 transition-all duration-300 flex flex-col">
             <div className="flex justify-between items-start mb-4">
               <div className="p-3 rounded-xl bg-[#f7941d]/10 text-[#f7941d] group-hover:scale-105 transition-transform">
@@ -86,7 +92,7 @@ const DashboardPage: React.FC = () => {
             </div>
             <h3 className="text-sm font-bold text-gray-900 mb-1 uppercase tracking-wider">Active Courses</h3>
             <p className="text-xs text-gray-500 mb-4 flex-grow">Continue where you left off</p>
-            
+
             <div className="mt-auto pt-4 border-t border-gray-100">
               <div className="flex justify-between text-xs font-bold text-gray-900 mb-2">
                 <span>Course Progress</span>
@@ -107,9 +113,12 @@ const DashboardPage: React.FC = () => {
             </div>
             <h3 className="text-sm font-bold text-gray-900 mb-1 uppercase tracking-wider">My Profile</h3>
             <p className="text-xs text-gray-500 mb-4 flex-grow">Manage your account settings</p>
-            <a href="#" className="mt-auto inline-flex items-center text-sm font-bold text-gray-900 hover:text-[#f7941d] transition-colors group/link">
+            <Link
+              to="/dashboard/profile"
+              className="mt-auto inline-flex items-center text-sm font-bold text-gray-900 hover:text-[#f7941d] transition-colors group/link"
+            >
               Edit Profile <ChevronRight size={16} className="ml-1 group-hover/link:translate-x-1 transition-transform" />
-            </a>
+            </Link>
           </div>
 
           <div className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
@@ -135,15 +144,18 @@ const DashboardPage: React.FC = () => {
             </div>
             <h3 className="text-sm font-bold text-gray-900 mb-1 uppercase tracking-wider">Certificates</h3>
             <p className="text-xs text-gray-500 mb-4 flex-grow">Earned achievements</p>
-            <a href="#" className="mt-auto inline-flex items-center text-sm font-bold text-gray-900 hover:text-purple-600 transition-colors group/link">
+            <Link
+              to="/dashboard/courses"
+              className="mt-auto inline-flex items-center text-sm font-bold text-gray-900 hover:text-purple-600 transition-colors group/link"
+            >
               View All <ChevronRight size={16} className="ml-1 group-hover/link:translate-x-1 transition-transform" />
-            </a>
+            </Link>
           </div>
         </div>
 
         {/* ================= MAIN CONTENT GRID ================= */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
+
           <div className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
             <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f7941d]/10 text-[#f7941d] group-hover:-translate-y-1 transition-transform">
               <Briefcase size={28} />
@@ -157,7 +169,10 @@ const DashboardPage: React.FC = () => {
                 <div className="w-1.5 h-1.5 rounded-full bg-[#f7941d] mt-1.5 shrink-0"></div>
                 <p className="text-xs font-medium text-gray-700">Portfolios require admin approval before going live.</p>
               </div>
-              <button className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white text-gray-900 px-4 py-3 text-sm font-bold hover:border-[#f7941d] hover:text-[#f7941d] transition-colors">
+              <button
+                onClick={() => navigate('/dashboard/portfolios')}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white text-gray-900 px-4 py-3 text-sm font-bold hover:border-[#f7941d] hover:text-[#f7941d] transition-colors"
+              >
                 Create Portfolio <ArrowRight size={16} />
               </button>
             </div>
@@ -175,7 +190,10 @@ const DashboardPage: React.FC = () => {
               <div className="flex items-center gap-2 text-xs font-bold text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
                 <ShieldCheck size={16} /> Password update recommended
               </div>
-              <button className="w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+              <button
+                onClick={() => navigate('/dashboard/profile', { state: { tab: 'security' } })}
+                className="w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+              >
                 Secure Account
               </button>
             </div>
@@ -190,7 +208,10 @@ const DashboardPage: React.FC = () => {
               <p className="text-sm font-medium opacity-90 leading-relaxed mb-6">
                 Our specialized IT career paths guide you from beginner to job-ready. Get personalized training and direct support to land your dream role.
               </p>
-              <button className="mt-auto w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white hover:bg-gray-900 shadow-lg flex items-center justify-center gap-2">
+              <button
+                onClick={() => navigate('/dashboard/courses')}
+                className="mt-auto w-full rounded-xl bg-black px-4 py-3 text-sm font-bold text-white hover:bg-gray-900 shadow-lg flex items-center justify-center gap-2"
+              >
                 Explore Paths <ArrowRight size={16} />
               </button>
             </div>
@@ -203,14 +224,21 @@ const DashboardPage: React.FC = () => {
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
             <h3 className="text-lg font-bold text-gray-900">Recent Activity</h3>
-            <button className="text-sm font-bold text-gray-500 hover:text-[#f7941d] transition-colors">
+            <button
+              onClick={() => navigate('/dashboard/courses')}
+              className="text-sm font-bold text-gray-500 hover:text-[#f7941d] transition-colors"
+            >
               View History
             </button>
           </div>
-          
+
           <div className="space-y-2">
             {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all cursor-pointer">
+              <div
+                key={activity.id}
+                onClick={() => navigate('/dashboard/marketing')}
+                className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all cursor-pointer"
+              >
                 <div className="h-12 w-12 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
                   {activity.icon}
                 </div>

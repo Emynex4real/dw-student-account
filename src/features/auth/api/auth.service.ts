@@ -4,6 +4,8 @@ import type {
   AuthResponse,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
 } from '../types/auth.types';
 
 // ── Mock Data ──────────────────────────────────────────────────────────
@@ -65,6 +67,30 @@ export async function forgotPassword(
 
   return {
     message: `A password reset link has been sent to ${request.email}`,
+    success: true,
+  };
+}
+
+/**
+ * Reset a user's password using a valid token.
+ *
+ * PHP endpoint (future): POST /api/auth/reset-password
+ */
+export async function resetPassword(
+  request: ResetPasswordRequest,
+): Promise<ResetPasswordResponse> {
+  await mockDelay(null, 800);
+
+  if (!request.token) {
+    throw new Error('Invalid or expired reset link. Please request a new one.');
+  }
+
+  if (!request.password || request.password.length < 8) {
+    throw new Error('Password must be at least 8 characters.');
+  }
+
+  return {
+    message: 'Your password has been reset successfully.',
     success: true,
   };
 }

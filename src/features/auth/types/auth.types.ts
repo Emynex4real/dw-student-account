@@ -37,6 +37,18 @@ export interface ForgotPasswordResponse {
   success: boolean;
 }
 
+/** Request shape for the reset-password endpoint */
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+/** Response shape from the reset-password endpoint */
+export interface ResetPasswordResponse {
+  message: string;
+  success: boolean;
+}
+
 /** Possible authentication error */
 export interface AuthError {
   message: string;

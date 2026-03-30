@@ -19,6 +19,9 @@ const LoginPage = lazy(
 const ForgotPasswordPage = lazy(
   () => import('../features/auth/components/ForgotPasswordPage'),
 );
+const ResetPasswordPage = lazy(
+  () => import('../features/auth/components/ResetPasswordPage'),
+);
 const DashboardPage = lazy(
   () => import('../features/dashboard/components/DashboardPage'),
 );
@@ -81,18 +84,22 @@ const routes: RouteObject[] = [
     errorElement: <ErrorPage />,
   },
   {
-    element: <AuthLayout />,
+    path: '/forgot-password',
+    element: (
+      <Suspended>
+        <ForgotPasswordPage />
+      </Suspended>
+    ),
     errorElement: <ErrorPage />,
-    children: [
-      {
-        path: '/forgot-password',
-        element: (
-          <Suspended>
-            <ForgotPasswordPage />
-          </Suspended>
-        ),
-      },
-    ],
+  },
+  {
+    path: '/reset-password',
+    element: (
+      <Suspended>
+        <ResetPasswordPage />
+      </Suspended>
+    ),
+    errorElement: <ErrorPage />,
   },
 
   // Protected / Dashboard routes

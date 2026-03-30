@@ -1,28 +1,101 @@
-import React, { useState } from 'react';
-import { 
-  Home, ChevronRight, User, Mail, Lock, 
-  Camera, Github, Linkedin, Globe, ShieldCheck, 
-  Save, MapPin, Briefcase, Key
+import React, { useState, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  Home, ChevronRight, User, Mail, Lock,
+  Camera, Github, Linkedin, Globe, ShieldCheck,
+  Save, MapPin, Briefcase, Key, CheckCircle, AlertTriangle, Eye, EyeOff
 } from 'lucide-react';
 
 const EditProfilePage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'general' | 'professional' | 'security'>('general');
+  const location = useLocation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [activeTab, setActiveTab] = useState<'general' | 'professional' | 'security'>(
+    (location.state as { tab?: string })?.tab === 'security' ? 'security' : 'general'
+  );
+
+  // Avatar state
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  // Save loading states
+  const [isSavingGeneral, setIsSavingGeneral] = useState(false);
+  const [isSavingProfessional, setIsSavingProfessional] = useState(false);
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+
+  // Security form state
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
+
+  // Toast
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => setAvatar(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveGeneral = async () => {
+    setIsSavingGeneral(true);
+    await new Promise(r => setTimeout(r, 800));
+    setIsSavingGeneral(false);
+    showToast('Profile updated successfully!');
+  };
+
+  const handleSaveProfessional = async () => {
+    setIsSavingProfessional(true);
+    await new Promise(r => setTimeout(r, 800));
+    setIsSavingProfessional(false);
+    showToast('Professional profile saved!');
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!currentPassword.trim()) {
+      showToast('Please enter your current password.', 'error');
+      return;
+    }
+    if (newPassword.length < 8) {
+      showToast('New password must be at least 8 characters.', 'error');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      showToast('New passwords do not match.', 'error');
+      return;
+    }
+    setIsSavingPassword(true);
+    await new Promise(r => setTimeout(r, 1000));
+    setIsSavingPassword(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    showToast('Password updated successfully!');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
-      
+
       {/* ================= HEADER & BREADCRUMBS ================= */}
       <div className="bg-black text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-gray-800">
         <div className="max-w-7xl mx-auto">
-          {/* Breadcrumb */}
           <nav className="flex items-center text-sm text-gray-400 mb-4">
-            <a href="#" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
+            <Link to="/dashboard" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
               <Home size={14} /> Home
-            </a>
+            </Link>
             <ChevronRight size={14} className="mx-2" />
             <span className="text-white">Edit Profile</span>
           </nav>
-          
+
           <div>
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
               Account <span className="text-[#f7941d]">Settings</span>
@@ -37,17 +110,15 @@ const EditProfilePage: React.FC = () => {
       {/* ================= MAIN CONTENT ================= */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="flex flex-col lg:flex-row gap-8">
-          
-          {/* ── Left Sidebar (Tabs) ─────────────────────────────── */}
+
+          {/* ── Left Sidebar (Tabs) ── */}
           <div className="lg:w-64 shrink-0">
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-2 sticky top-6">
               <nav className="space-y-1">
                 <button
                   onClick={() => setActiveTab('general')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === 'general' 
-                      ? 'bg-[#f7941d] text-black shadow-md' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                    activeTab === 'general' ? 'bg-[#f7941d] text-black shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-black'
                   }`}
                 >
                   <User size={18} /> General Info
@@ -55,9 +126,7 @@ const EditProfilePage: React.FC = () => {
                 <button
                   onClick={() => setActiveTab('professional')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === 'professional' 
-                      ? 'bg-[#f7941d] text-black shadow-md' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                    activeTab === 'professional' ? 'bg-[#f7941d] text-black shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-black'
                   }`}
                 >
                   <Briefcase size={18} /> Professional Profile
@@ -65,9 +134,7 @@ const EditProfilePage: React.FC = () => {
                 <button
                   onClick={() => setActiveTab('security')}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                    activeTab === 'security' 
-                      ? 'bg-[#f7941d] text-black shadow-md' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                    activeTab === 'security' ? 'bg-[#f7941d] text-black shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-black'
                   }`}
                 >
                   <ShieldCheck size={18} /> Security
@@ -76,9 +143,9 @@ const EditProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* ── Right Content Area ──────────────────────────────── */}
+          {/* ── Right Content Area ── */}
           <div className="flex-1">
-            
+
             {/* --- GENERAL INFO TAB --- */}
             {activeTab === 'general' && (
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -86,24 +153,42 @@ const EditProfilePage: React.FC = () => {
                   <h2 className="text-xl font-bold text-gray-900">General Information</h2>
                   <p className="text-sm text-gray-500 mt-1">Update your photo and personal details here.</p>
                 </div>
-                
+
                 <div className="p-6 sm:p-8 space-y-8">
                   {/* Avatar Upload */}
                   <div className="flex items-center gap-6">
-                    <div className="relative group cursor-pointer">
+                    <div
+                      className="relative group cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
                       <div className="h-24 w-24 rounded-full bg-black text-[#f7941d] flex items-center justify-center text-3xl font-black shadow-lg overflow-hidden border-4 border-white ring-2 ring-gray-100">
-                        MB
+                        {avatar ? (
+                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : 'MB'}
                       </div>
                       <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Camera size={24} className="text-white" />
                       </div>
                     </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleAvatarUpload}
+                    />
                     <div>
                       <div className="flex gap-3 mb-2">
-                        <button className="px-4 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors">
+                        <button
+                          onClick={() => fileInputRef.current?.click()}
+                          className="px-4 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors"
+                        >
                           Upload New
                         </button>
-                        <button className="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors">
+                        <button
+                          onClick={() => setAvatar(null)}
+                          className="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-bold rounded-lg hover:bg-gray-200 transition-colors"
+                        >
                           Remove
                         </button>
                       </div>
@@ -120,7 +205,7 @@ const EditProfilePage: React.FC = () => {
                         <input type="text" defaultValue="Michael" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-1.5">
                       <label className="text-sm font-bold text-gray-700">Last Name</label>
                       <div className="relative">
@@ -144,7 +229,7 @@ const EditProfilePage: React.FC = () => {
                         <input type="email" defaultValue="student@example.com" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-1.5 sm:col-span-2">
                       <label className="text-sm font-bold text-gray-700">Location</label>
                       <div className="relative">
@@ -154,10 +239,18 @@ const EditProfilePage: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end">
-                  <button className="flex items-center gap-2 px-6 py-2.5 bg-black text-[#f7941d] font-bold rounded-xl hover:bg-gray-900 transition-colors shadow-md">
-                    <Save size={18} /> Save Changes
+                  <button
+                    onClick={handleSaveGeneral}
+                    disabled={isSavingGeneral}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-black text-[#f7941d] font-bold rounded-xl hover:bg-gray-900 transition-colors shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isSavingGeneral ? (
+                      <><div className="h-4 w-4 animate-spin rounded-full border-2 border-[#f7941d]/30 border-t-[#f7941d]" /> Saving...</>
+                    ) : (
+                      <><Save size={18} /> Save Changes</>
+                    )}
                   </button>
                 </div>
               </div>
@@ -170,7 +263,7 @@ const EditProfilePage: React.FC = () => {
                   <h2 className="text-xl font-bold text-gray-900">Professional Profile</h2>
                   <p className="text-sm text-gray-500 mt-1">These details will be displayed on your approved academy portfolios.</p>
                 </div>
-                
+
                 <div className="p-6 sm:p-8 space-y-6">
                   <div className="space-y-1.5">
                     <label className="text-sm font-bold text-gray-700">Professional Headline</label>
@@ -182,8 +275,8 @@ const EditProfilePage: React.FC = () => {
 
                   <div className="space-y-1.5">
                     <label className="text-sm font-bold text-gray-700">Short Bio</label>
-                    <textarea 
-                      rows={4} 
+                    <textarea
+                      rows={4}
                       defaultValue="Frontend Developer specializing in React, TypeScript, and Next.js. Passionate about building accessible and scalable web applications."
                       placeholder="Tell us a bit about your skills and goals..."
                       className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all resize-none"
@@ -192,33 +285,27 @@ const EditProfilePage: React.FC = () => {
 
                   <div className="pt-4 border-t border-gray-100 space-y-6">
                     <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Social Links</h3>
-                    
+
                     <div className="space-y-1.5">
                       <label className="text-sm font-bold text-gray-700">GitHub Profile</label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-0 pl-3.5 flex items-center justify-center pointer-events-none text-gray-400">
-                          <Github size={18} />
-                        </span>
+                      <div className="relative">
+                        <Github className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input type="url" placeholder="https://github.com/yourusername" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
                       </div>
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-sm font-bold text-gray-700">LinkedIn Profile</label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-0 pl-3.5 flex items-center justify-center pointer-events-none text-gray-400">
-                          <Linkedin size={18} />
-                        </span>
+                      <div className="relative">
+                        <Linkedin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input type="url" placeholder="https://linkedin.com/in/yourusername" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
                       </div>
                     </div>
 
                     <div className="space-y-1.5">
                       <label className="text-sm font-bold text-gray-700">Personal Website</label>
-                      <div className="relative flex items-center">
-                        <span className="absolute left-0 pl-3.5 flex items-center justify-center pointer-events-none text-gray-400">
-                          <Globe size={18} />
-                        </span>
+                      <div className="relative">
+                        <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                         <input type="url" placeholder="https://yourportfolio.com" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
                       </div>
                     </div>
@@ -226,8 +313,16 @@ const EditProfilePage: React.FC = () => {
                 </div>
 
                 <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end">
-                  <button className="flex items-center gap-2 px-6 py-2.5 bg-black text-[#f7941d] font-bold rounded-xl hover:bg-gray-900 transition-colors shadow-md">
-                    <Save size={18} /> Save Profile
+                  <button
+                    onClick={handleSaveProfessional}
+                    disabled={isSavingProfessional}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-black text-[#f7941d] font-bold rounded-xl hover:bg-gray-900 transition-colors shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isSavingProfessional ? (
+                      <><div className="h-4 w-4 animate-spin rounded-full border-2 border-[#f7941d]/30 border-t-[#f7941d]" /> Saving...</>
+                    ) : (
+                      <><Save size={18} /> Save Profile</>
+                    )}
                   </button>
                 </div>
               </div>
@@ -240,10 +335,9 @@ const EditProfilePage: React.FC = () => {
                   <h2 className="text-xl font-bold text-gray-900">Security Settings</h2>
                   <p className="text-sm text-gray-500 mt-1">Update your password to keep your account secure.</p>
                 </div>
-                
+
                 <div className="p-6 sm:p-8 space-y-6">
-                  
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3 mb-6">
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
                     <ShieldCheck className="text-amber-500 shrink-0 mt-0.5" size={20} />
                     <div>
                       <h4 className="text-sm font-bold text-amber-900">Password Recommendation</h4>
@@ -255,7 +349,16 @@ const EditProfilePage: React.FC = () => {
                     <label className="text-sm font-bold text-gray-700">Current Password</label>
                     <div className="relative">
                       <Key className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                      <input type="password" placeholder="Enter current password" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      <input
+                        type={showCurrentPw ? 'text' : 'password'}
+                        value={currentPassword}
+                        onChange={e => setCurrentPassword(e.target.value)}
+                        placeholder="Enter current password"
+                        className="w-full pl-10 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all"
+                      />
+                      <button type="button" onClick={() => setShowCurrentPw(!showCurrentPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700" tabIndex={-1}>
+                        {showCurrentPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
                   </div>
 
@@ -263,7 +366,16 @@ const EditProfilePage: React.FC = () => {
                     <label className="text-sm font-bold text-gray-700">New Password</label>
                     <div className="relative">
                       <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                      <input type="password" placeholder="Create new password" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      <input
+                        type={showNewPw ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={e => setNewPassword(e.target.value)}
+                        placeholder="Create new password"
+                        className="w-full pl-10 pr-12 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all"
+                      />
+                      <button type="button" onClick={() => setShowNewPw(!showNewPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700" tabIndex={-1}>
+                        {showNewPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
                   </div>
 
@@ -271,15 +383,38 @@ const EditProfilePage: React.FC = () => {
                     <label className="text-sm font-bold text-gray-700">Confirm New Password</label>
                     <div className="relative">
                       <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                      <input type="password" placeholder="Confirm new password" className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:bg-white transition-all" />
+                      <input
+                        type={showConfirmPw ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={e => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm new password"
+                        className={`w-full pl-10 pr-12 py-2.5 bg-gray-50 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:bg-white transition-all ${
+                          confirmPassword && newPassword !== confirmPassword
+                            ? 'border-red-300 focus:ring-red-300'
+                            : 'border-gray-200 focus:ring-[#f7941d]'
+                        }`}
+                      />
+                      <button type="button" onClick={() => setShowConfirmPw(!showConfirmPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700" tabIndex={-1}>
+                        {showConfirmPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
+                    {confirmPassword && newPassword !== confirmPassword && (
+                      <p className="text-xs font-bold text-red-500 mt-1">Passwords do not match</p>
+                    )}
                   </div>
-                  
                 </div>
 
                 <div className="p-6 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end">
-                  <button className="flex items-center gap-2 px-6 py-2.5 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors shadow-md">
-                    <ShieldCheck size={18} className="text-[#f7941d]" /> Update Password
+                  <button
+                    onClick={handleUpdatePassword}
+                    disabled={isSavingPassword}
+                    className="flex items-center gap-2 px-6 py-2.5 bg-black text-white font-bold rounded-xl hover:bg-gray-800 transition-colors shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isSavingPassword ? (
+                      <><div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> Updating...</>
+                    ) : (
+                      <><ShieldCheck size={18} className="text-[#f7941d]" /> Update Password</>
+                    )}
                   </button>
                 </div>
               </div>
@@ -289,13 +424,19 @@ const EditProfilePage: React.FC = () => {
         </div>
       </main>
 
-      {/* ================= FOOTER ================= */}
       <footer className="bg-white border-t border-gray-200 py-6 px-4 text-center mt-auto">
-        <p className="text-sm text-gray-500 font-medium">
-          Digital World Tech Academy © 2026
-        </p>
+        <p className="text-sm text-gray-500 font-medium">Digital World Tech Academy © 2026</p>
       </footer>
 
+      {toast && (
+        <div className={`fixed bottom-6 right-6 z-50 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-300 ${toast.type === 'success' ? 'bg-gray-900 text-white' : 'bg-red-900 text-white'}`}>
+          {toast.type === 'success'
+            ? <CheckCircle size={18} className="text-[#f7941d]" />
+            : <AlertTriangle size={18} className="text-red-400" />
+          }
+          <p className="text-sm font-bold">{toast.message}</p>
+        </div>
+      )}
     </div>
   );
 };

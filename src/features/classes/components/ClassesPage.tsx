@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  Home, ChevronRight, Video, Calendar, Clock, 
-  Copy, ExternalLink, CheckCircle, PlayCircle, 
-  Crown, AlertCircle 
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Home, ChevronRight, Video, Calendar, Clock,
+  Copy, ExternalLink, CheckCircle, PlayCircle,
+  Crown, AlertCircle
 } from 'lucide-react';
 
-// --- Mock Data ---
 const mockActiveClasses = [
   {
     id: 1,
@@ -37,46 +37,62 @@ const mockPastRecordings = [
     title: "Introduction to Web Accessibility",
     date: "March 15, 2026",
     duration: "1h 45m",
-    link: "#",
+    link: "https://drive.google.com/file/d/mock-recording-id/view",
     type: "recorded"
   }
 ];
 
 const ClassLinksPage: React.FC = () => {
-  // Toggle this to true to see the populated state!
+  const navigate = useNavigate();
   const [hasClasses, setHasClasses] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const handleCopyLink = (id: number, link: string) => {
     navigator.clipboard.writeText(link);
     setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000); // Reset after 2 seconds
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleJoinClass = (link: string) => {
+    window.open(link, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleWatchReplay = (link: string) => {
+    if (link === '#' || !link) {
+      showToast('Replay will be available within 24 hours of the session.');
+      return;
+    }
+    window.open(link, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
-      
+
       {/* ================= HEADER & BREADCRUMBS ================= */}
       <div className="bg-black text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-gray-800">
         <div className="max-w-7xl mx-auto">
-          {/* Breadcrumb */}
           <nav className="flex items-center text-sm text-gray-400 mb-4">
-            <a href="#" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
+            <Link to="/dashboard" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
               <Home size={14} /> Home
-            </a>
+            </Link>
             <ChevronRight size={14} className="mx-2" />
-            <a href="#" className="hover:text-[#f7941d] transition-colors">Courses</a>
+            <Link to="/dashboard/courses" className="hover:text-[#f7941d] transition-colors">Courses</Link>
             <ChevronRight size={14} className="mx-2" />
             <span className="text-white">Class Links</span>
           </nav>
-          
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
                   Your <span className="text-[#f7941d]">Class Links</span>
                 </h1>
-                {/* Pro Account Badge */}
                 <span className="hidden sm:flex items-center gap-1 bg-[#f7941d]/20 border border-[#f7941d]/50 text-[#f7941d] text-xs font-bold px-2.5 py-1 rounded-full">
                   <Crown size={14} /> Pro Student
                 </span>
@@ -91,15 +107,15 @@ const ClassLinksPage: React.FC = () => {
 
       {/* ================= MAIN CONTENT ================= */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
-        {/* Toggle switch for development demonstration */}
+
+        {/* Dev toggle */}
         <div className="mb-8 flex justify-end">
           <label className="flex items-center cursor-pointer gap-2 text-sm text-gray-500 font-medium bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
             <span>Show Empty State</span>
             <div className="relative">
-              <input 
-                type="checkbox" 
-                className="sr-only" 
+              <input
+                type="checkbox"
+                className="sr-only"
                 checked={hasClasses}
                 onChange={() => setHasClasses(!hasClasses)}
               />
@@ -111,34 +127,37 @@ const ClassLinksPage: React.FC = () => {
         </div>
 
         {!hasClasses ? (
-          /* --- EMPTY STATE UI --- */
+          /* --- EMPTY STATE --- */
           <div className="flex flex-col items-center justify-center text-center py-24 bg-white rounded-3xl border border-dashed border-gray-300 shadow-sm max-w-3xl mx-auto">
             <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
               <Video size={48} className="text-gray-400" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">You don’t have any active class links yet.</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">You don't have any active class links yet.</h2>
             <p className="text-gray-500 max-w-md mx-auto mb-8">
               Once you enroll in a course with live instructor sessions, your meeting links and recordings will automatically appear here.
             </p>
-            <button className="bg-black text-white font-medium py-3 px-8 rounded-xl hover:bg-[#f7941d] hover:text-black transition-colors duration-300">
+            <button
+              onClick={() => navigate('/dashboard/courses')}
+              className="bg-black text-white font-medium py-3 px-8 rounded-xl hover:bg-[#f7941d] hover:text-black transition-colors duration-300"
+            >
               Browse Available Courses
             </button>
           </div>
         ) : (
-          /* --- FILLED STATE UI --- */
+          /* --- FILLED STATE --- */
           <div className="space-y-10">
-            
-            {/* Live Classes Section */}
+
+            {/* Live Classes */}
             <section>
               <div className="flex items-center gap-2 mb-6">
                 <div className="h-8 w-2 bg-[#f7941d] rounded-full"></div>
                 <h2 className="text-2xl font-bold text-gray-900">Upcoming Live Classes</h2>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {mockActiveClasses.map((cls) => (
                   <div key={cls.id} className={`bg-white rounded-2xl border ${cls.status === 'starting-soon' ? 'border-[#f7941d] shadow-md shadow-[#f7941d]/10' : 'border-gray-200 shadow-sm'} overflow-hidden flex flex-col`}>
-                    
+
                     <div className={`p-4 flex justify-between items-center border-b ${cls.status === 'starting-soon' ? 'bg-[#f7941d]/10 border-[#f7941d]/20' : 'bg-gray-50 border-gray-100'}`}>
                       <div className="flex items-center gap-2">
                         {cls.status === 'starting-soon' ? (
@@ -162,7 +181,7 @@ const ClassLinksPage: React.FC = () => {
 
                     <div className="p-6 flex-grow">
                       <h3 className="text-xl font-bold text-gray-900 mb-4">{cls.title}</h3>
-                      
+
                       <div className="space-y-3 mb-6">
                         <div className="flex items-center gap-3 text-sm text-gray-600">
                           <Calendar size={18} className="text-gray-400" />
@@ -179,12 +198,13 @@ const ClassLinksPage: React.FC = () => {
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
-                        <button 
+                        <button
+                          onClick={() => handleJoinClass(cls.link)}
                           className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold transition-colors ${cls.status === 'starting-soon' ? 'bg-[#f7941d] text-black hover:bg-[#d67e15]' : 'bg-black text-white hover:bg-gray-800'}`}
                         >
                           Join Class <ExternalLink size={18} />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleCopyLink(cls.id, cls.link)}
                           className="sm:w-32 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                         >
@@ -201,13 +221,13 @@ const ClassLinksPage: React.FC = () => {
               </div>
             </section>
 
-            {/* Past Recordings Section */}
+            {/* Past Recordings */}
             <section>
               <div className="flex items-center gap-2 mb-6">
                 <div className="h-8 w-2 bg-black rounded-full"></div>
                 <h2 className="text-2xl font-bold text-gray-900">Recent Recordings</h2>
               </div>
-              
+
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="divide-y divide-gray-100">
                   {mockPastRecordings.map((recording) => (
@@ -224,14 +244,16 @@ const ClassLinksPage: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium hover:border-black hover:text-black transition-colors">
+                      <button
+                        onClick={() => handleWatchReplay(recording.link)}
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium hover:border-black hover:text-black transition-colors"
+                      >
                         Watch Replay <PlayCircle size={16} />
                       </button>
                     </div>
                   ))}
                 </div>
-                
-                {/* Notice for older recordings */}
+
                 <div className="bg-gray-50 p-4 border-t border-gray-200 flex items-start gap-3 text-sm text-gray-500">
                   <AlertCircle size={16} className="text-amber-500 shrink-0 mt-0.5" />
                   <p>Recordings are automatically deleted 30 days after the live session. Please ensure you download any materials you need before they expire.</p>
@@ -244,13 +266,16 @@ const ClassLinksPage: React.FC = () => {
 
       </main>
 
-      {/* ================= FOOTER ================= */}
       <footer className="bg-white border-t border-gray-200 py-6 px-4 text-center mt-auto">
-        <p className="text-sm text-gray-500 font-medium">
-          Digital World Tech Academy © 2026
-        </p>
+        <p className="text-sm text-gray-500 font-medium">Digital World Tech Academy © 2026</p>
       </footer>
 
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-300">
+          <CheckCircle size={18} className="text-[#f7941d]" />
+          <p className="text-sm font-bold">{toast}</p>
+        </div>
+      )}
     </div>
   );
 };
