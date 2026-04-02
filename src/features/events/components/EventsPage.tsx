@@ -154,7 +154,7 @@ const EventsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ================= MAIN CONTENT ================= */}
+      {/* ── MAIN CONTENT ── */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
 
         {/* Dev toggle */}
@@ -181,9 +181,9 @@ const EventsPage: React.FC = () => {
             <div className="w-24 h-24 bg-[#f7941d]/10 rounded-full flex items-center justify-center mb-6">
               <Calendar size={48} className="text-[#f7941d]" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">There are no Events yet.</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">No Events Yet</h2>
             <p className="text-gray-500 max-w-md mx-auto mb-8">
-              We are currently planning our next batch of workshops and meetups. Keep an eye on your dashboard or email for upcoming announcements!
+              We are currently planning our next batch of workshops and meetups. Keep an eye on your dashboard for upcoming announcements!
             </p>
             <button
               onClick={() => navigate('/dashboard')}
@@ -205,27 +205,23 @@ const EventsPage: React.FC = () => {
                   type="text"
                   placeholder="Search events..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={e => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d]/50 focus:border-[#f7941d] transition-all"
                 />
               </div>
-
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 hide-scrollbar">
-                <div className="flex items-center gap-2 px-2 text-gray-500 mr-1">
-                  <Filter size={16} />
-                  <span className="text-sm font-medium hidden sm:inline">Filter:</span>
-                </div>
-                {filters.map(filter => (
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
+                <Filter size={16} className="text-gray-500 shrink-0" />
+                {categories.map(cat => (
                   <button
-                    key={filter}
-                    onClick={() => setActiveFilter(filter)}
+                    key={cat}
+                    onClick={() => setActiveFilter(cat)}
                     className={`whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       activeFilter === filter
                         ? 'bg-black text-[#f7941d] shadow-md'
                         : 'bg-gray-50 text-gray-600 border border-gray-200 hover:border-[#f7941d] hover:text-black'
                     }`}
                   >
-                    {filter}
+                    {cat}
                   </button>
                 ))}
               </div>
@@ -315,7 +311,6 @@ const EventsPage: React.FC = () => {
             </div>
           </div>
         )}
-
       </main>
 
       <footer className="bg-white border-t border-gray-200 py-6 px-4 text-center mt-auto">

@@ -1,4 +1,4 @@
-import { mockDelay } from '../../../services/mock';
+import api from '../../../services/api';
 import type {
   LoginCredentials,
   AuthResponse,
@@ -8,65 +8,53 @@ import type {
   ResetPasswordResponse,
 } from '../types/auth.types';
 
-// ── Mock Data ──────────────────────────────────────────────────────────
-// Hardcoded test credentials for development.
-// These will be removed when the PHP backend is live.
-
-const MOCK_USER = {
-  id: 'usr_001',
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'student@university.edu',
-  role: 'student' as const,
-  avatarUrl: undefined,
-};
-
-const MOCK_TOKEN = 'mock-jwt-token-abc123def456';
-
-// ── Service Functions ──────────────────────────────────────────────────
-
-/**
- * Authenticate a user with email and password.
- *
- * PHP endpoint (future): POST /api/auth/login
- *
- * @throws Error with descriptive message on invalid credentials
- */
-export async function loginUser(
-  credentials: LoginCredentials,
-): Promise<AuthResponse> {
-  // Simulate network latency
-  await mockDelay(null, 600);
-
-  // ACCEPT ALL: In mock mode, we grant access to any credentials provided.
-  // This helps with rapid testing and demonstration.
-  return {
-    user: {
-      ...MOCK_USER,
-      email: credentials.email.toLowerCase(),
-    },
-    token: MOCK_TOKEN,
+// ── API response shape from PHP backend ───────────────────────────────
+interface ApiLoginResponse {
+  token: string;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    image: string;
+    password_change: number;
   };
 }
 
 /**
- * Request a password reset link.
- *
- * PHP endpoint (future): POST /api/auth/forgot-password
+ * Authenticate a user with email and password.
+ * POST /auth/login
+ */
+export async function loginUser(credentials: LoginCredentials): Promise<AuthResponse> {
+  const { data } = await api.post<ApiLoginResponse>('/auth/login', credentials);
+
+  // Map PHP response shape to frontend AuthUser shape
+  const nameParts = data.user.username.trim().split(' ');
+  const firstName = nameParts[0] ?? data.user.username;
+  const lastName = nameParts.slice(1).join(' ') || '';
+
+  return {
+    token: data.token,
+    user: {
+      id: String(data.user.id),
+      firstName,
+      lastName,
+      email: data.user.email,
+      role: 'student',
+      avatarUrl: data.user.image || undefined,
+    },
+  };
+}
+
+/**
+ * Request a password reset key.
+ * POST /auth/forgot-password
  */
 export async function forgotPassword(
   request: ForgotPasswordRequest,
 ): Promise<ForgotPasswordResponse> {
-  // Simulate network latency
-  await mockDelay(null, 800);
-
-  // In mock mode, always return success if email looks valid
-  if (!request.email || !request.email.includes('@')) {
-    throw new Error('Please enter a valid email address.');
-  }
-
+  const { data } = await api.post('/auth/forgot-password', { email: request.email });
   return {
-    message: `A password reset link has been sent to ${request.email}`,
+    message: data.message ?? 'Password reset key generated.',
     success: true,
   };
 }

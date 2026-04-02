@@ -6,149 +6,14 @@ import {
   PlayCircle, TrendingUp, Grid3X3, List, X,
   ChevronDown, SlidersHorizontal, CheckCircle
 } from 'lucide-react';
-
-// --- Enhanced Mock Data ---
-const initialCourses = [
-  {
-    id: 1,
-    title: 'Digital Marketing Mastery',
-    teacher: 'Lex Olowo',
-    teacherAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=60',
-    category: 'Marketing',
-    level: 'Beginner',
-    duration: '12 weeks',
-    lessons: 48,
-    students: 1234,
-    rating: 4.8,
-    reviews: 256,
-    currentPrice: 170000,
-    originalPrice: 200000,
-    description: 'Master the art of digital marketing with proven strategies for SEO, social media, and content marketing. Build campaigns that convert.',
-    image: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=600&auto=format&fit=crop',
-    tags: ['SEO', 'Social Media', 'Analytics'],
-    isNew: true,
-    isBestseller: false,
-    progress: 0,
-    lastAccessed: null
-  },
-  {
-    id: 2,
-    title: 'Advanced Web Development Bootcamp',
-    teacher: 'Michael Balogun',
-    teacherAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=60',
-    category: 'Programming',
-    level: 'Advanced',
-    duration: '16 weeks',
-    lessons: 84,
-    students: 3421,
-    rating: 4.9,
-    reviews: 892,
-    currentPrice: 250000,
-    originalPrice: 350000,
-    description: 'Become a full-stack developer. Master React, Node.js, databases, and deployment with real-world projects and mentorship.',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop',
-    tags: ['React', 'Node.js', 'MongoDB'],
-    isNew: false,
-    isBestseller: true,
-    progress: 35,
-    lastAccessed: '2 days ago'
-  },
-  {
-    id: 3,
-    title: 'UI/UX Design Fundamentals',
-    teacher: 'Sarah Johnson',
-    teacherAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=60',
-    category: 'Design',
-    level: 'Intermediate',
-    duration: '8 weeks',
-    lessons: 32,
-    students: 2156,
-    rating: 4.7,
-    reviews: 445,
-    currentPrice: 120000,
-    originalPrice: 150000,
-    description: 'Learn to design intuitive interfaces and user experiences. From wireframing to high-fidelity prototypes using Figma.',
-    image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop',
-    tags: ['Figma', 'Prototyping', 'User Research'],
-    isNew: false,
-    isBestseller: true,
-    progress: 0,
-    lastAccessed: null
-  },
-  {
-    id: 4,
-    title: 'Data Science & Machine Learning',
-    teacher: 'Dr. Emmanuel Ade',
-    teacherAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=60',
-    category: 'Data Science',
-    level: 'Advanced',
-    duration: '20 weeks',
-    lessons: 96,
-    students: 987,
-    rating: 4.9,
-    reviews: 178,
-    currentPrice: 300000,
-    originalPrice: 400000,
-    description: 'Dive deep into data analysis, visualization, and machine learning algorithms. Build predictive models with Python.',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop',
-    tags: ['Python', 'ML', 'TensorFlow'],
-    isNew: true,
-    isBestseller: false,
-    progress: 12,
-    lastAccessed: '1 week ago'
-  },
-  {
-    id: 5,
-    title: 'Mobile App Development with Flutter',
-    teacher: 'Chioma Nnamdi',
-    teacherAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop&q=60',
-    category: 'Programming',
-    level: 'Intermediate',
-    duration: '10 weeks',
-    lessons: 40,
-    students: 1567,
-    rating: 4.6,
-    reviews: 234,
-    currentPrice: 180000,
-    originalPrice: 220000,
-    description: 'Build beautiful cross-platform mobile apps for iOS and Android using Flutter and Dart programming language.',
-    image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=600&auto=format&fit=crop',
-    tags: ['Flutter', 'Dart', 'Mobile'],
-    isNew: false,
-    isBestseller: false,
-    progress: 0,
-    lastAccessed: null
-  },
-  {
-    id: 6,
-    title: 'Cybersecurity Fundamentals',
-    teacher: 'James Okonkwo',
-    teacherAvatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=60',
-    category: 'Security',
-    level: 'Beginner',
-    duration: '6 weeks',
-    lessons: 24,
-    students: 2341,
-    rating: 4.8,
-    reviews: 567,
-    currentPrice: 100000,
-    originalPrice: 130000,
-    description: 'Learn essential cybersecurity skills to protect systems and networks. Ethical hacking basics and security protocols.',
-    image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop',
-    tags: ['Security', 'Networking', 'Ethical Hacking'],
-    isNew: false,
-    isBestseller: true,
-    progress: 0,
-    lastAccessed: null
-  }
-];
+import { useCourseStore } from '../../../store/courseStore';
+import { getEnrolledCourses, type Course } from '../../../services/courses.service';
 
 const AllCoursesPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [activeLevel, setActiveLevel] = useState('All');
-  const [sortBy, setSortBy] = useState('popular');
+  const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [showFilters, setShowFilters] = useState(false);
@@ -166,91 +31,115 @@ const AllCoursesPage: React.FC = () => {
     ['All', ...Array.from(new Set(initialCourses.map(c => c.category)))],
     []
   );
-  
-  const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
-  
+
   const sortOptions = [
-    { value: 'popular', label: 'Most Popular' },
     { value: 'newest', label: 'Newest' },
     { value: 'price-low', label: 'Price: Low to High' },
     { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'rating', label: 'Highest Rated' }
+    { value: 'progress', label: 'In Progress' },
   ];
 
-  // Enhanced filter logic
   const filteredCourses = useMemo(() => {
-    const filtered = initialCourses.filter(course => {
-      const matchesSearch = 
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    const filtered = courses.filter(course => {
+      const matchesSearch =
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.teacher.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+        course.teacher.toLowerCase().includes(searchQuery.toLowerCase());
+
       const matchesCategory = activeCategory === 'All' || course.category === activeCategory;
-      const matchesLevel = activeLevel === 'All' || course.level === activeLevel;
-      const matchesPrice = course.currentPrice >= priceRange[0] && course.currentPrice <= priceRange[1];
-      
-      return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
+
+      return matchesSearch && matchesCategory;
     });
 
-    // Sorting
     switch (sortBy) {
       case 'price-low':
-        filtered.sort((a, b) => a.currentPrice - b.currentPrice);
+        filtered.sort((a, b) => a.amount - b.amount);
         break;
       case 'price-high':
-        filtered.sort((a, b) => b.currentPrice - a.currentPrice);
+        filtered.sort((a, b) => b.amount - a.amount);
         break;
-      case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'newest':
-        filtered.sort((a, b) => (a.isNew === b.isNew ? 0 : a.isNew ? -1 : 1));
+      case 'progress':
+        filtered.sort((a, b) => b.progress_pct - a.progress_pct);
         break;
       default:
-        filtered.sort((a, b) => b.students - a.students);
+        filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     }
 
     return filtered;
-  }, [searchQuery, activeCategory, activeLevel, sortBy, priceRange]);
-
-  const toggleWishlist = (id: number) => {
-    setWishlist((prev: number[]) => 
-      prev.includes(id) ? prev.filter((i: number) => i !== id) : [...prev, id]
-    );
-  };
+  }, [courses, searchQuery, activeCategory, sortBy]);
 
   const clearFilters = () => {
     setSearchQuery('');
     setActiveCategory('All');
-    setActiveLevel('All');
-    setPriceRange([0, 500000]);
   };
 
   const formatPrice = (price: number) => `#${price.toLocaleString()}`;
 
-  const activeFiltersCount = [
-    activeCategory !== 'All',
-    activeLevel !== 'All',
-    searchQuery !== '',
-    priceRange[0] > 0 || priceRange[1] < 500000
-  ].filter(Boolean).length;
+  const getInitials = (name: string) =>
+    name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+
+  // ── Loading State ────────────────────────────────────────────────────────
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
+        <div className="bg-black text-white py-16 px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="h-8 w-48 bg-gray-700 rounded animate-pulse mb-4"></div>
+            <div className="h-5 w-80 bg-gray-700 rounded animate-pulse"></div>
+          </div>
+        </div>
+        <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-200 overflow-hidden animate-pulse">
+                <div className="h-48 bg-gray-200"></div>
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                  <div className="h-5 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-10 bg-gray-200 rounded-xl mt-4"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // ── Error State ───────────────────────────────────────────────────────────
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle size={48} className="text-red-400 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Failed to load courses</h3>
+          <p className="text-gray-500 mb-6">Could not connect to the server. Please try again.</p>
+          <button
+            onClick={() => refetch()}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#f7941d] text-black rounded-xl font-semibold hover:bg-[#e8850a] transition-colors"
+          >
+            <Loader2 size={18} />
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
-      
-      {/* ================= ENHANCED HEADER & HERO ================= */}
+
+      {/* ── HEADER ── */}
       <div className="bg-black text-white relative overflow-hidden">
-        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: `radial-gradient(circle at 2px 2px, #f7941d 1px, transparent 0)`,
             backgroundSize: '40px 40px'
           }}></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          {/* Breadcrumb */}
           <nav className="flex items-center text-sm text-gray-400 mb-6">
             <Link to="/dashboard" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
               <Home size={14} />
@@ -259,57 +148,51 @@ const AllCoursesPage: React.FC = () => {
             <ChevronRight size={14} className="mx-2" />
             <span className="text-white">Your Courses</span>
           </nav>
-          
+
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div className="max-w-2xl">
               <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-                Explore <span className="text-[#f7941d]">Courses</span>
+                My <span className="text-[#f7941d]">Courses</span>
               </h1>
               <p className="text-gray-400 text-lg leading-relaxed">
-                Discover industry-leading programs designed to accelerate your tech career. 
-                Learn from experts and join thousands of successful graduates.
+                Your enrolled courses. Pick up where you left off or start something new.
               </p>
             </div>
-            
-            {/* Quick Stats */}
+
             <div className="flex gap-8 text-center">
               <div>
-                <div className="text-3xl font-bold text-[#f7941d]">50+</div>
-                <div className="text-sm text-gray-400">Courses</div>
+                <div className="text-3xl font-bold text-[#f7941d]">{courses.length}</div>
+                <div className="text-sm text-gray-400">Enrolled</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-[#f7941d]">15k+</div>
-                <div className="text-sm text-gray-400">Students</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-[#f7941d]">4.8</div>
-                <div className="text-sm text-gray-400">Rating</div>
+                <div className="text-3xl font-bold text-[#f7941d]">
+                  {courses.filter(c => c.progress_pct > 0).length}
+                </div>
+                <div className="text-sm text-gray-400">In Progress</div>
               </div>
             </div>
           </div>
         </div>
-        
-        {/* Decorative Elements */}
+
         <div className="absolute top-0 right-0 -mt-20 -mr-20 h-64 w-64 rounded-full bg-[#f7941d] opacity-10 blur-3xl"></div>
       </div>
 
-      {/* ================= STICKY FILTER BAR ================= */}
+      {/* ── FILTER BAR ── */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            
-            {/* Search Bar */}
+
             <div className="relative w-full lg:w-96">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input 
-                type="text" 
-                placeholder="Search courses, teachers, or tags..." 
+              <input
+                type="text"
+                placeholder="Search courses or teachers..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-10 py-2.5 bg-gray-100 border-0 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d]/50 focus:bg-white transition-all"
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => setSearchQuery('')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
@@ -319,23 +202,27 @@ const AllCoursesPage: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-3 overflow-x-auto pb-2 lg:pb-0">
-              {/* Filter Toggle Button */}
-              <button 
-                onClick={() => setShowFilters(!showFilters)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                  showFilters || activeFiltersCount > 0
-                    ? 'bg-[#f7941d] text-black' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <SlidersHorizontal size={16} />
-                Filters
-                {activeFiltersCount > 0 && (
-                  <span className="bg-black text-white text-xs px-2 py-0.5 rounded-full">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </button>
+
+              {/* Category Filter */}
+              <div className="relative group">
+                <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-200 transition-all whitespace-nowrap">
+                  <span>{activeCategory === 'All' ? 'All Categories' : activeCategory}</span>
+                  <ChevronDown size={16} />
+                </button>
+                <div className="absolute left-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  {categories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl ${
+                        activeCategory === cat ? 'text-[#f7941d] font-medium' : 'text-gray-700'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {/* Sort Dropdown */}
               <div className="relative group">
@@ -360,13 +247,13 @@ const AllCoursesPage: React.FC = () => {
 
               {/* View Mode Toggle */}
               <div className="flex items-center bg-gray-100 rounded-xl p-1">
-                <button 
+                <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-[#f7941d]' : 'text-gray-500 hover:text-gray-700'}`}
                 >
                   <Grid3X3 size={18} />
                 </button>
-                <button 
+                <button
                   onClick={() => setViewMode('list')}
                   className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-[#f7941d]' : 'text-gray-500 hover:text-gray-700'}`}
                 >
@@ -375,116 +262,27 @@ const AllCoursesPage: React.FC = () => {
               </div>
             </div>
           </div>
-
-          {/* Expanded Filters */}
-          {showFilters && (
-            <div className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Categories */}
-              <div>
-                <label className="text-sm font-semibold text-gray-900 mb-3 block">Category</label>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map((category: string) => (
-                    <button
-                      key={category}
-                      onClick={() => setActiveCategory(category)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                        activeCategory === category 
-                          ? 'bg-black text-[#f7941d]' 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {category}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Levels */}
-              <div>
-                <label className="text-sm font-semibold text-gray-900 mb-3 block">Level</label>
-                <div className="flex flex-wrap gap-2">
-                  {levels.map(level => (
-                    <button
-                      key={level}
-                      onClick={() => setActiveLevel(level)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                        activeLevel === level 
-                          ? 'bg-black text-[#f7941d]' 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      {level}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Range */}
-              <div>
-                <label className="text-sm font-semibold text-gray-900 mb-3 block">
-                  Price Range: {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="500000"
-                  step="10000"
-                  value={priceRange[1]}
-                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#f7941d]"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>Free</span>
-                  <span>₦500k</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Active Filters Tags */}
-          {activeFiltersCount > 0 && (
-            <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-gray-500">Active filters:</span>
-              {activeCategory !== 'All' && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#f7941d]/10 text-[#f7941d] text-sm rounded-full">
-                  {activeCategory}
-                  <button onClick={() => setActiveCategory('All')}><X size={14} /></button>
-                </span>
-              )}
-              {activeLevel !== 'All' && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#f7941d]/10 text-[#f7941d] text-sm rounded-full">
-                  {activeLevel}
-                  <button onClick={() => setActiveLevel('All')}><X size={14} /></button>
-                </span>
-              )}
-              {(priceRange[0] > 0 || priceRange[1] < 500000) && (
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-[#f7941d]/10 text-[#f7941d] text-sm rounded-full">
-                  {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
-                  <button onClick={() => setPriceRange([0, 500000])}><X size={14} /></button>
-                </span>
-              )}
-              <button 
-                onClick={clearFilters}
-                className="text-sm text-gray-500 hover:text-gray-700 underline"
-              >
-                Clear all
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* ================= MAIN CONTENT ================= */}
+      {/* ── MAIN CONTENT ── */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Results Count */}
+
         <div className="mb-6 flex items-center justify-between">
           <p className="text-gray-600">
             Showing <span className="font-semibold text-gray-900">{Math.min(visibleCount, filteredCourses.length)}</span> of <span className="font-semibold text-gray-900">{filteredCourses.length}</span> courses
           </p>
+          {(searchQuery || activeCategory !== 'All') && (
+            <button
+              onClick={clearFilters}
+              className="text-sm text-[#f7941d] hover:underline flex items-center gap-1"
+            >
+              <X size={14} />
+              Clear filters
+            </button>
+          )}
         </div>
 
-        {/* Course Grid/List */}
         {filteredCourses.length > 0 ? (
           <div className={viewMode === 'grid'
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -496,45 +294,52 @@ const AllCoursesPage: React.FC = () => {
 
               if (viewMode === 'list') {
                 return (
-                  <div key={course.id} className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col sm:flex-row">
-                    {/* Image */}
-                    <div className="relative sm:w-48 h-48 sm:h-auto overflow-hidden flex-shrink-0">
-                      <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
-                      {course.isNew && (
-                        <span className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">NEW</span>
-                      )}
-                      {course.isBestseller && (
-                        <span className="absolute top-3 left-3 bg-[#f7941d] text-black text-xs font-bold px-2 py-1 rounded">BESTSELLER</span>
+                  <div key={course.course_id} className="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col sm:flex-row">
+                    <div className="relative sm:w-48 h-48 sm:h-auto overflow-hidden flex-shrink-0 bg-gray-200">
+                      {course.image ? (
+                        <img src={course.image} alt={course.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-400">
+                          <BookOpen size={40} />
+                        </div>
                       )}
                     </div>
-                    
-                    {/* Content */}
+
                     <div className="p-5 flex-grow flex flex-col sm:flex-row sm:items-center gap-4">
                       <div className="flex-grow">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-xs font-medium text-[#f7941d] bg-[#f7941d]/10 px-2 py-1 rounded">{course.category}</span>
-                          <span className="text-xs text-gray-500">{course.level}</span>
                         </div>
                         <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#f7941d] transition-colors">{course.title}</h3>
                         <p className="text-sm text-gray-600 line-clamp-2 mb-3">{course.description}</p>
-                        
+
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <div className="flex items-center gap-1">
-                            <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                            <span className="font-medium text-gray-900">{course.rating}</span>
-                            <span>({course.reviews})</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <User size={14} />
-                            <span>{course.students.toLocaleString()} students</span>
+                            <BarChart3 size={14} />
+                            <span>{course.teacher}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <Clock size={14} />
-                            <span>{course.duration}</span>
+                            <span>{course.completed}/{course.total} lessons</span>
                           </div>
                         </div>
+
+                        {course.progress_pct > 0 && (
+                          <div className="mt-3">
+                            <div className="flex justify-between text-xs mb-1">
+                              <span className="text-gray-500">Progress</span>
+                              <span className="font-medium text-[#f7941d]">{course.progress_pct}%</span>
+                            </div>
+                            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div
+                                className="h-full bg-[#f7941d] rounded-full"
+                                style={{ width: `${course.progress_pct}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      
+
                       <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-2 sm:min-w-[140px]">
                         <div className="text-right">
                           <p className="text-sm text-gray-400 line-through">{formatPrice(course.originalPrice)}</p>
@@ -554,51 +359,31 @@ const AllCoursesPage: React.FC = () => {
 
               // Grid View Card
               return (
-                <div key={course.id} className="group bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-                  
-                  {/* Card Image Header */}
+                <div key={course.course_id} className="group bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
+
                   <div className="relative h-48 overflow-hidden bg-gray-200">
-                    <img 
-                      src={course.image} 
-                      alt={course.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    
-                    {/* Overlays */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2">
-                      {course.isNew && (
-                        <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                          NEW
-                        </span>
-                      )}
-                      {course.isBestseller && (
-                        <span className="bg-[#f7941d] text-black text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
-                          <TrendingUp size={12} />
-                          BESTSELLER
-                        </span>
-                      )}
-                      {course.progress > 0 && (
-                        <span className="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                          {course.progress}% COMPLETE
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Wishlist Button */}
-                    <button 
-                      onClick={() => toggleWishlist(course.id)}
-                      className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white transition-all hover:scale-110"
-                    >
-                      <Heart 
-                        size={18} 
-                        className={`transition-colors ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} 
+                    {course.image ? (
+                      <img
+                        src={course.image}
+                        alt={course.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                    </button>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-400">
+                        <BookOpen size={48} />
+                      </div>
+                    )}
 
-                    {/* Quick Actions on Hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                    {course.progress_pct > 0 && (
+                      <div className="absolute top-3 left-3">
+                        <span className="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                          {course.progress_pct}% COMPLETE
+                        </span>
+                      </div>
+                    )}
+
                     <div className="absolute bottom-3 left-3 right-3 flex gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                       <button
                         onClick={() => navigate('/dashboard/marketing')}
@@ -616,95 +401,47 @@ const AllCoursesPage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Card Body */}
                   <div className="p-5 flex flex-col flex-grow">
-                    
-                    {/* Meta Row */}
+
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-xs font-bold text-[#f7941d] uppercase tracking-wider">{course.category}</span>
                       <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <BarChart3 size={12} />
-                        {course.level}
+                        <Clock size={12} />
+                        {course.completed}/{course.total} lessons
                       </div>
                     </div>
 
-                    {/* Title */}
                     <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#f7941d] transition-colors leading-tight">
                       {course.title}
                     </h3>
 
-                    {/* Teacher */}
                     <div className="flex items-center gap-2 mb-3">
-                      <img src={course.teacherAvatar} alt={course.teacher} className="w-6 h-6 rounded-full object-cover" />
+                      <div className="w-6 h-6 rounded-full bg-gray-800 text-white text-xs flex items-center justify-center font-bold flex-shrink-0">
+                        {getInitials(course.teacher)}
+                      </div>
                       <span className="text-sm text-gray-600">{course.teacher}</span>
                     </div>
 
-                    {/* Stats Row */}
-                    <div className="flex items-center gap-3 mb-3 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Star size={14} className="text-yellow-400 fill-yellow-400" />
-                        <span className="font-medium text-gray-900">{course.rating}</span>
-                        <span className="text-xs">({course.reviews})</span>
-                      </div>
-                      <span className="text-gray-300">|</span>
-                      <div className="flex items-center gap-1">
-                        <User size={14} />
-                        <span>{course.students.toLocaleString()}</span>
-                      </div>
-                      <span className="text-gray-300">|</span>
-                      <div className="flex items-center gap-1">
-                        <Clock size={14} />
-                        <span>{course.duration}</span>
-                      </div>
-                    </div>
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">{course.description}</p>
 
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {course.tags.slice(0, 2).map((tag: string, idx: number) => (
-                        <span key={idx} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md">
-                          {tag}
-                        </span>
-                      ))}
-                      {course.tags.length > 2 && (
-                        <span className="text-xs text-gray-400 px-1">+{course.tags.length - 2}</span>
-                      )}
-                    </div>
-
-                    {/* Progress Bar (if started) */}
-                    {course.progress > 0 && (
+                    {course.progress_pct > 0 && (
                       <div className="mb-4">
                         <div className="flex justify-between text-xs mb-1">
                           <span className="text-gray-600">Progress</span>
-                          <span className="font-medium text-[#f7941d]">{course.progress}%</span>
+                          <span className="font-medium text-[#f7941d]">{course.progress_pct}%</span>
                         </div>
                         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className="h-full bg-gradient-to-r from-[#f7941d] to-[#f7941d]/80 rounded-full transition-all duration-500"
-                            style={{ width: `${course.progress}%` }}
+                            style={{ width: `${course.progress_pct}%` }}
                           ></div>
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">Last accessed {course.lastAccessed}</p>
                       </div>
                     )}
 
-                    {/* Pricing & CTA */}
                     <div className="mt-auto pt-4 border-t border-gray-100">
                       <div className="flex items-end justify-between mb-3">
-                        <div>
-                          <p className="text-sm text-gray-400 line-through decoration-gray-300 mb-1">
-                            {formatPrice(course.originalPrice)}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span className="text-2xl font-black text-gray-900">
-                              {formatPrice(course.currentPrice)}
-                            </span>
-                            {discount > 0 && (
-                              <span className="bg-red-50 text-red-600 text-xs font-bold px-2 py-1 rounded-md">
-                                -{discount}%
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                        <span className="text-2xl font-black text-gray-900">{formatPrice(course.amount)}</span>
                       </div>
                       
                       <button
@@ -732,7 +469,6 @@ const AllCoursesPage: React.FC = () => {
             })}
           </div>
         ) : (
-          /* Empty State */
           <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 text-gray-400 mb-6">
               <Search size={32} />
@@ -741,7 +477,7 @@ const AllCoursesPage: React.FC = () => {
             <p className="text-gray-500 mb-6 max-w-md mx-auto">
               We couldn't find any courses matching your criteria. Try adjusting your search or filters.
             </p>
-            <button 
+            <button
               onClick={clearFilters}
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#f7941d] text-black rounded-xl font-semibold hover:bg-[#e8850a] transition-colors"
             >
@@ -765,7 +501,6 @@ const AllCoursesPage: React.FC = () => {
         )}
       </main>
 
-      {/* ================= FOOTER ================= */}
       <footer className="bg-white border-t border-gray-200 py-8 px-4">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-500">

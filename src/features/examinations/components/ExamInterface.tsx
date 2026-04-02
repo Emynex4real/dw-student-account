@@ -11,7 +11,7 @@ import { useExamSecurity } from '../hooks/useExamSecurity';
 import { ExamTimer } from './ExamTimer';
 import { QuestionNavigation } from './QuestionNavigation';
 import { QuestionDisplay } from './QuestionDisplay';
-import { examService } from '../services/examService';
+import { submitExam as submitExamApi } from '../../../services/exams.service';
 
 export const ExamInterface: React.FC = () => {
   const navigate = useNavigate();
@@ -86,7 +86,25 @@ export const ExamInterface: React.FC = () => {
   const handleSubmitExam = async () => {
     setIsSubmitting(true);
     try {
-      const result = await examService.submitExam(currentExam.id, session.answers);
+      const apiAnswers = session.answers.map(a => ({
+        question_id: Number(a.questionId),
+        answer: (typeof a.answer === 'string' ? a.answer : a.answer[0] ?? '').toUpperCase(),
+      }));
+      const apiResult = await submitExamApi(Number(currentExam.id), apiAnswers);
+      const pct = parseFloat(apiResult.percentage);
+
+      const result = {
+        examId: currentExam.id,
+        studentId: '',
+        score: pct,
+        totalPoints: apiResult.total,
+        earnedPoints: apiResult.score,
+        passed: pct >= (currentExam.passingScore ?? 70),
+        completedAt: new Date().toISOString(),
+        timeSpent: currentExam.totalDuration * 60 - session.timeRemaining,
+        answers: session.answers,
+      };
+
       clearSession();
       navigate(`/exams/${currentExam.id}/results`, { state: { result } });
     } catch (error) {

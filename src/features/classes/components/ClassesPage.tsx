@@ -105,7 +105,7 @@ const ClassLinksPage: React.FC = () => {
         </div>
       </div>
 
-      {/* ================= MAIN CONTENT ================= */}
+      {/* ── MAIN CONTENT ── */}
       <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
         {/* Dev toggle */}
@@ -150,7 +150,7 @@ const ClassLinksPage: React.FC = () => {
             {/* Live Classes */}
             <section>
               <div className="flex items-center gap-2 mb-6">
-                <div className="h-8 w-2 bg-[#f7941d] rounded-full"></div>
+                <div className="h-8 w-2 bg-[#f7941d] rounded-full" />
                 <h2 className="text-2xl font-bold text-gray-900">Upcoming Live Classes</h2>
               </div>
 
@@ -163,8 +163,8 @@ const ClassLinksPage: React.FC = () => {
                         {cls.status === 'starting-soon' ? (
                           <span className="flex items-center gap-1.5 text-xs font-bold text-[#f7941d] bg-white px-2.5 py-1 rounded-full shadow-sm">
                             <span className="relative flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f7941d] opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f7941d]"></span>
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f7941d] opacity-75" />
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f7941d]" />
                             </span>
                             Starting Soon
                           </span>
@@ -224,7 +224,7 @@ const ClassLinksPage: React.FC = () => {
             {/* Past Recordings */}
             <section>
               <div className="flex items-center gap-2 mb-6">
-                <div className="h-8 w-2 bg-black rounded-full"></div>
+                <div className="h-8 w-2 bg-black rounded-full" />
                 <h2 className="text-2xl font-bold text-gray-900">Recent Recordings</h2>
               </div>
 
@@ -256,14 +256,13 @@ const ClassLinksPage: React.FC = () => {
 
                 <div className="bg-gray-50 p-4 border-t border-gray-200 flex items-start gap-3 text-sm text-gray-500">
                   <AlertCircle size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                  <p>Recordings are automatically deleted 30 days after the live session. Please ensure you download any materials you need before they expire.</p>
+                  <p>All class recordings are saved and available for you to rewatch at any time.</p>
                 </div>
               </div>
             </section>
 
           </div>
         )}
-
       </main>
 
       <footer className="bg-white border-t border-gray-200 py-6 px-4 text-center mt-auto">

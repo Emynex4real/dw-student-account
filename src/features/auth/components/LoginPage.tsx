@@ -15,7 +15,8 @@ const LoginPage: React.FC = () => {
   const [loginMethod, setLoginMethod] = useState<'password' | 'magic'>('password');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+  const [rememberMe, setRememberMe] = useState(false);
+
   // --- UI State ---
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +27,15 @@ const LoginPage: React.FC = () => {
   const isEmailValid = email.trim() !== '' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isPasswordValid = password.trim() !== '';
   const isFormValid = loginMethod === 'password' ? (isEmailValid && isPasswordValid) : isEmailValid;
+
+  // --- Restore remembered email on mount ---
+  useEffect(() => {
+    const saved = localStorage.getItem('sp_remembered_email');
+    if (saved) {
+      setEmail(saved);
+      setRememberMe(true);
+    }
+  }, []);
 
   // --- Caps Lock Listener ---
   useEffect(() => {
@@ -52,6 +62,11 @@ const LoginPage: React.FC = () => {
     try {
       if (loginMethod === 'password') {
         const response = await loginUser({ email, password });
+        if (rememberMe) {
+          localStorage.setItem('sp_remembered_email', email);
+        } else {
+          localStorage.removeItem('sp_remembered_email');
+        }
         login(response.user, response.token);
         navigate('/dashboard', { replace: true });
       } else {
@@ -238,7 +253,12 @@ const LoginPage: React.FC = () => {
             {/* Form Actions */}
             <div className={`flex items-center justify-between transition-opacity duration-300 ${loginMethod === 'magic' ? 'hidden' : 'block'}`}>
               <label className="flex items-center gap-2 cursor-pointer group">
-                <input type="checkbox" className="w-4 h-4 rounded border-gray-300 text-[#f7941d] focus:ring-[#f7941d] transition-colors" />
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-[#f7941d] focus:ring-[#f7941d] transition-colors"
+                />
                 <span className="text-sm font-bold text-gray-600 group-hover:text-black transition-colors">Remember me</span>
               </label>
               <Link to="/forgot-password" className="text-sm font-bold text-[#f7941d] hover:text-[#d67e15] transition-colors">

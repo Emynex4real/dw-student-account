@@ -1,40 +1,42 @@
 import axios from 'axios';
+import { useAuthStore } from '../store/authStore';
 
 /**
- * Global Axios instance.
- * - baseURL is read from Vite environment variables so that swapping
- *   from a mock layer to the real PHP backend is a one-line .env change.
- * - Interceptors are stubbed and ready for token injection + error handling.
+ * Global Axios instance pointing at the PHP backend.
+ * Base URL reads from .env (VITE_API_BASE_URL) with a fallback to localhost XAMPP.
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/students/api',
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 10000,
 });
 
-// ── Request Interceptor ────────────────────────────────────────────────
+// ── Request Interceptor — attach JWT token + clear Content-Type for FormData ──
 api.interceptors.request.use(
   (config) => {
-    // TODO: Inject auth token from store when auth feature is implemented
-    // const token = useAuthStore.getState().token;
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    // Let Axios set the correct multipart boundary automatically
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
     return config;
   },
   (error) => Promise.reject(error),
 );
 
-// ── Response Interceptor ───────────────────────────────────────────────
+// ── Response Interceptor — handle 401 (token expired / invalid) ────────
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // TODO: Global error handling (401 redirect, toast notifications, etc.)
-    // if (error.response?.status === 401) {
-    //   window.location.href = '/login';
-    // }
+    if (error.response?.status === 401) {
+      useAuthStore.getState().logout();
+      window.location.href = '/login';
+    }
     return Promise.reject(error);
   },
 );

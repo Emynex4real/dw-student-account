@@ -34,11 +34,17 @@ const CoursesPage = lazy(
 const MarketingPage = lazy(
   () => import('../features/marketing/components/MarketingPage'),
 );
+const CourseDetailPage = lazy(
+  () => import('../features/marketing/components/MarketingPage'),
+);
 const PortfoliosPage = lazy(
   () => import('../features/portfolios/components/PortfoliosPage'),
 );
 const ClassesPage = lazy(
   () => import('../features/classes/components/ClassesPage'),
+);
+const ClassReplaysPage = lazy(
+  () => import('../features/classes/components/ClassReplaysPage'),
 );
 const EventsPage = lazy(
   () => import('../features/events/components/EventsPage'),
@@ -143,6 +149,14 @@ const routes: RouteObject[] = [
             ),
           },
           {
+            path: '/dashboard/courses/:courseId',
+            element: (
+              <Suspended>
+                <CourseDetailPage />
+              </Suspended>
+            ),
+          },
+          {
             path: '/dashboard/portfolios',
             element: (
               <Suspended>
@@ -155,6 +169,14 @@ const routes: RouteObject[] = [
             element: (
               <Suspended>
                 <ClassesPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: '/dashboard/replays',
+            element: (
+              <Suspended>
+                <ClassReplaysPage />
               </Suspended>
             ),
           },
@@ -211,11 +233,7 @@ const routes: RouteObject[] = [
       },
       {
         path: '/exams',
-        element: (
-          <Suspended>
-            <ExaminationsPage />
-          </Suspended>
-        ),
+        element: <Navigate to="/dashboard/examinations" replace />,
       },
       {
         element: <DashboardLayout />,

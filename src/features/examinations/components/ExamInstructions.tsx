@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Clock, FileText, Award, ShieldCheck, AlertTriangle, 
-  Monitor, Wifi, CheckCircle, ArrowRight 
+import {
+  Clock, FileText, Award, ShieldCheck, AlertTriangle,
+  Monitor, Wifi, CheckCircle, ArrowRight, KeyRound, Loader2,
 } from 'lucide-react';
 import type { Exam } from '../types/exam.types';
 import { useExamStore } from '../store/examStore';
+import { validateExamToken } from '../../../services/exams.service';
 
 interface ExamInstructionsProps {
   exam: Exam;
@@ -16,6 +17,10 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
   const { startExam } = useExamStore();
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [systemCheckPassed, setSystemCheckPassed] = useState(false);
+  const [showCodeStep, setShowCodeStep] = useState(false);
+  const [examCode, setExamCode] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [verifying, setVerifying] = useState(false);
 
   React.useEffect(() => {
     // Simple system check
@@ -29,13 +34,32 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
   }, []);
 
   const handleStartExam = () => {
-    if (!agreedToTerms) {
-      alert('Please agree to the exam rules before starting.');
+    if (!agreedToTerms) return;
+    setShowCodeStep(true);
+    setCodeError('');
+    setExamCode('');
+  };
+
+  const handleVerifyCode = async () => {
+    if (!examCode.trim()) {
+      setCodeError('Please enter your exam code.');
       return;
     }
-    
-    startExam(exam);
-    navigate(`/exams/${exam.id}/take`);
+    setVerifying(true);
+    setCodeError('');
+    try {
+      const result = await validateExamToken(examCode.trim());
+      if (result.valid) {
+        startExam(exam);
+        navigate(`/exams/${exam.id}/take`);
+      } else {
+        setCodeError('Invalid exam code. Please check and try again.');
+      }
+    } catch {
+      setCodeError('Invalid exam code. Please check and try again.');
+    } finally {
+      setVerifying(false);
+    }
   };
 
   return (
@@ -190,7 +214,7 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
         {/* Action Buttons */}
         <div className="flex gap-4">
           <button
-            onClick={() => navigate('/exams')}
+            onClick={() => navigate('/dashboard/examinations')}
             className="flex-1 bg-gray-200 text-gray-700 font-bold py-4 px-6 rounded-xl hover:bg-gray-300 transition-colors"
           >
             Cancel
@@ -203,6 +227,72 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
             Start Exam <ArrowRight size={20} />
           </button>
         </div>
+
+        {/* Exam Code Modal */}
+        {showCodeStep && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+              {/* Modal Header */}
+              <div className="bg-black px-8 py-6 text-white text-center">
+                <div className="w-14 h-14 bg-[#f7941d]/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <KeyRound size={28} className="text-[#f7941d]" />
+                </div>
+                <h2 className="text-xl font-bold">Enter Exam Code</h2>
+                <p className="text-gray-400 text-sm mt-1">
+                  Enter the access code provided by your instructor
+                </p>
+              </div>
+
+              {/* Modal Body */}
+              <div className="px-8 py-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Exam Access Code</label>
+                  <input
+                    type="text"
+                    value={examCode}
+                    onChange={e => { setExamCode(e.target.value.toUpperCase()); setCodeError(''); }}
+                    onKeyDown={e => e.key === 'Enter' && handleVerifyCode()}
+                    placeholder="e.g. EXAM-2026-XYZ"
+                    autoFocus
+                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3.5 text-center text-lg font-mono tracking-widest focus:outline-none focus:border-[#f7941d] transition-colors"
+                  />
+                </div>
+
+                {codeError && (
+                  <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl text-sm">
+                    <AlertTriangle size={16} className="shrink-0" /> {codeError}
+                  </div>
+                )}
+
+                <button
+                  onClick={handleVerifyCode}
+                  disabled={verifying}
+                  className="w-full py-3.5 bg-[#f7941d] text-black font-bold rounded-xl hover:bg-[#d67e15] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-base"
+                >
+                  {verifying ? <Loader2 size={20} className="animate-spin" /> : <ArrowRight size={20} />}
+                  {verifying ? 'Verifying…' : 'Verify & Begin Exam'}
+                </button>
+
+                <button
+                  onClick={() => { setShowCodeStep(false); setExamCode(''); setCodeError(''); }}
+                  className="w-full py-3 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  Go Back
+                </button>
+
+                <div className="border-t border-dashed border-gray-200 pt-4">
+                  <p className="text-xs text-center text-gray-400 mb-2">Development only</p>
+                  <button
+                    onClick={() => { startExam(exam); navigate(`/exams/${exam.id}/take`); }}
+                    className="w-full py-2.5 text-sm font-medium text-gray-500 border border-dashed border-gray-300 rounded-xl hover:border-gray-400 hover:text-gray-700 transition-colors"
+                  >
+                    Skip Code (Bypass)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
