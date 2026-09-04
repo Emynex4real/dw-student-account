@@ -1,6 +1,6 @@
 import api from './api';
 
-const VIDEO_BASE = 'https://admin.digitalworldtech.academy/uploads/courses/videos/';
+const VIDEO_BASE = 'https://admin-api.digitalworldtech.academy/uploads/courses/videos/';
 
 export interface LectureComment {
   id: number;

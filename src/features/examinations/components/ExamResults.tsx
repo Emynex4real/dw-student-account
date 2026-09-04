@@ -26,9 +26,11 @@ const ExamResults: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If navigate() passed state, use it directly
+    const autoSubmitted = location.state?.autoSubmitted === true;
     const state = location.state?.result;
-    if (state && typeof state.score === 'number') {
+
+    // Manual submit: use the result passed directly via navigate state
+    if (!autoSubmitted && state && typeof state.score === 'number') {
       setResult({
         score: state.score,
         earnedPoints: state.earnedPoints ?? state.score,
@@ -46,14 +48,14 @@ const ExamResults: React.FC = () => {
       return;
     }
 
-    // Fallback: fetch from API history
-    const fetchResult = async () => {
+    // Auto-submit path (rule violation / time up): keepalive fetch is in-flight,
+    // wait 2 seconds to give the server time to record the result, then fetch history.
+    const fetchResult = async (delayMs = 0) => {
+      if (delayMs > 0) await new Promise(r => setTimeout(r, delayMs));
       try {
         const history = await getExamHistory();
-        const match = history.find(h => String(h.id) === String(examId) ||
-          // history entries don't have exam_id directly, so take the most recent
-          false
-        ) ?? history[0];
+        // Match by exam_id (the exam taken), fall back to most recent result
+        const match = history.find(h => String(h.exam_id) === String(examId)) ?? history[0];
 
         if (match) {
           const pct = parseFloat(match.percentage);
@@ -75,8 +77,8 @@ const ExamResults: React.FC = () => {
       }
     };
 
-    fetchResult();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchResult(autoSubmitted ? 2500 : 0);
+  }, [examId, location.state, navigate]);
 
   const formatTime = (seconds: number): string => {
     if (!seconds) return '—';
@@ -119,14 +121,14 @@ const ExamResults: React.FC = () => {
           </p>
 
           {/* Score */}
-          <div className="inline-flex items-center gap-4 bg-gray-50 rounded-2xl px-8 py-6 border border-gray-200">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-gray-50 rounded-2xl px-6 sm:px-8 py-5 sm:py-6 border border-gray-200 w-full sm:w-auto">
             <div className="text-center">
               <p className="text-sm text-gray-500 font-bold uppercase mb-1">Your Score</p>
               <p className={`text-5xl font-black ${result.passed ? 'text-green-600' : 'text-red-600'}`}>
                 {result.score.toFixed(1)}%
               </p>
             </div>
-            <div className="w-px h-16 bg-gray-300" />
+            <div className="w-full sm:w-px h-px sm:h-16 bg-gray-300" />
             <div className="text-center">
               <p className="text-sm text-gray-500 font-bold uppercase mb-1">Points</p>
               <p className="text-3xl font-bold text-gray-900">
@@ -179,7 +181,10 @@ const ExamResults: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
             <button
-              onClick={() => navigate('/dashboard/examinations')}
+              onClick={() => {
+                if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+                navigate('/dashboard/examinations');
+              }}
               className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-xl font-bold hover:bg-gray-800 transition-colors"
             >
               <Home size={20} />
@@ -190,7 +195,7 @@ const ExamResults: React.FC = () => {
 
         {/* Certificate (if passed) */}
         {result.passed && (
-          <div className="mt-6 bg-gradient-to-r from-[#f7941d] to-yellow-500 rounded-2xl shadow-lg p-8 text-center text-white">
+          <div className="mt-6 bg-gradient-to-r from-[#f7941d] to-yellow-500 rounded-2xl shadow-lg p-5 sm:p-8 text-center text-white">
             <Award size={48} className="mx-auto mb-4" />
             <h3 className="text-2xl font-bold mb-2">Certificate Available!</h3>
             <p className="mb-4 opacity-90">Download your certificate of completion</p>

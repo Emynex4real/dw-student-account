@@ -4,8 +4,6 @@ import type {
   AuthResponse,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
-  ResetPasswordRequest,
-  ResetPasswordResponse,
 } from '../types/auth.types';
 
 // ── API response shape from PHP backend ───────────────────────────────
@@ -20,12 +18,40 @@ interface ApiLoginResponse {
   };
 }
 
+// Keep retrying for up to deadlineMs (default 60s) on network failures.
+// Each attempt has a 15s timeout. Delays grow: 2s, 4s, 6s...
+// Stops immediately if the server responds with an error (wrong password, etc.)
+async function withDeadlineRetry<T>(fn: () => Promise<T>, deadlineMs = 60000): Promise<T> {
+  const start = Date.now();
+  let lastError: unknown;
+  let attempt = 0;
+
+  while (Date.now() - start < deadlineMs) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      lastError = err;
+      if (err?.response?.status) throw err; // server error — never retry
+      attempt++;
+      const delay = Math.min(2000 * attempt, 8000);
+      const timeLeft = deadlineMs - (Date.now() - start);
+      if (timeLeft <= 0) break;
+      await new Promise(res => setTimeout(res, Math.min(delay, timeLeft)));
+    }
+  }
+  throw lastError;
+}
+
 /**
  * Authenticate a user with email and password.
+ * Automatically retries up to 2× on network failures before giving up.
  * POST /auth/login
  */
 export async function loginUser(credentials: LoginCredentials): Promise<AuthResponse> {
-  const { data } = await api.post<ApiLoginResponse>('/auth/login', credentials);
+  const { data } = await withDeadlineRetry(
+    () => api.post<ApiLoginResponse>('/auth/login', credentials, { timeout: 30000 }),
+    60000, // keep trying for up to 60 seconds on bad network
+  );
 
   // Map PHP response shape to frontend AuthUser shape
   const nameParts = data.user.username.trim().split(' ');
@@ -52,33 +78,44 @@ export async function loginUser(credentials: LoginCredentials): Promise<AuthResp
 export async function forgotPassword(
   request: ForgotPasswordRequest,
 ): Promise<ForgotPasswordResponse> {
-  const { data } = await api.post('/auth/forgot-password', { email: request.email });
+  const { data } = await api.post('/auth/forgot-password', { email: request.email }, { timeout: 60000 });
   return {
-    message: data.message ?? 'Password reset key generated.',
+    message: data.message ?? 'Reset link sent.',
     success: true,
   };
 }
 
 /**
- * Reset a user's password using a valid token.
- *
- * PHP endpoint (future): POST /api/auth/reset-password
+ * Reset password using token from email.
+ * POST /auth/reset-password
  */
-export async function resetPassword(
-  request: ResetPasswordRequest,
-): Promise<ResetPasswordResponse> {
-  await mockDelay(null, 800);
+export async function resetPassword({ token, password }: { token: string; password: string }): Promise<void> {
+  await api.post('/auth/reset-password', { reset_key: token, password });
+}
 
-  if (!request.token) {
-    throw new Error('Invalid or expired reset link. Please request a new one.');
-  }
+/**
+ * Auto-login via giveaway link.
+ * GET /auth/giveaway?token=DigitalWorldTechAcademy&year=2
+ */
+export async function giveawayLogin(token: string, year: string): Promise<AuthResponse> {
+  const { data } = await api.get<ApiLoginResponse & { user: { isGiveaway?: boolean } }>(
+    `/auth/giveaway?token=${encodeURIComponent(token)}&year=${encodeURIComponent(year)}`,
+  );
 
-  if (!request.password || request.password.length < 8) {
-    throw new Error('Password must be at least 8 characters.');
-  }
+  const nameParts = data.user.username.trim().split(' ');
+  const firstName = nameParts[0] ?? data.user.username;
+  const lastName = nameParts.slice(1).join(' ') || '';
 
   return {
-    message: 'Your password has been reset successfully.',
-    success: true,
+    token: data.token,
+    user: {
+      id: String(data.user.id),
+      firstName,
+      lastName,
+      email: data.user.email,
+      role: 'student',
+      avatarUrl: data.user.image || undefined,
+      isGiveaway: data.user.isGiveaway ?? false,
+    },
   };
 }

@@ -5,7 +5,6 @@ import type { ExamSession, Exam } from '../types/exam.types';
 interface Answer {
   questionId: string;
   answer: string | string[];
-  flagged: boolean;
   timeSpent: number;
 }
 
@@ -14,9 +13,8 @@ interface ExamStore {
   session: ExamSession | null;
   
   // Actions
-  startExam: (exam: Exam) => void;
+  startExam: (exam: Exam, elapsedSeconds?: number) => void;
   setAnswer: (questionId: string, answer: string | string[]) => void;
-  toggleFlag: (questionId: string) => void;
   navigateToQuestion: (sectionIndex: number, questionIndex: number) => void;
   updateTimeRemaining: (seconds: number) => void;
   incrementTabSwitch: () => void;
@@ -32,19 +30,20 @@ export const useExamStore = create<ExamStore>()(
       currentExam: null,
       session: null,
 
-      startExam: (exam: Exam) => {
+      startExam: (exam: Exam, elapsedSeconds = 0) => {
         const answers: Answer[] = [];
-        
+
         exam.sections.forEach(section => {
           section.questions.forEach(question => {
             answers.push({
               questionId: question.id,
               answer: question.type === 'multiple-select' ? [] : '',
-              flagged: false,
               timeSpent: 0
             });
           });
         });
+
+        const timeRemaining = Math.max(0, exam.totalDuration * 60 - elapsedSeconds);
 
         set({
           currentExam: exam,
@@ -54,7 +53,7 @@ export const useExamStore = create<ExamStore>()(
             answers,
             currentSectionIndex: 0,
             currentQuestionIndex: 0,
-            timeRemaining: exam.totalDuration * 60,
+            timeRemaining,
             tabSwitchCount: 0,
             isFullScreen: false,
             lastSaved: Date.now()
@@ -68,22 +67,6 @@ export const useExamStore = create<ExamStore>()(
 
         const updatedAnswers = session.answers.map(a =>
           a.questionId === questionId ? { ...a, answer } : a
-        );
-
-        set({
-          session: {
-            ...session,
-            answers: updatedAnswers
-          }
-        });
-      },
-
-      toggleFlag: (questionId: string) => {
-        const { session } = get();
-        if (!session) return;
-
-        const updatedAnswers = session.answers.map(a =>
-          a.questionId === questionId ? { ...a, flagged: !a.flagged } : a
         );
 
         set({
@@ -156,8 +139,7 @@ export const useExamStore = create<ExamStore>()(
       },
 
       submitExam: () => {
-        // This will be handled by the component
-        // Store just clears the session
+        set({ currentExam: null, session: null });
       },
 
       clearSession: () => {

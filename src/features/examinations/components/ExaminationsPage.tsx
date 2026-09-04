@@ -14,6 +14,7 @@ const ExaminationsPage: React.FC = () => {
   const { data: exams = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['exams'],
     queryFn: getExams,
+    refetchOnMount: 'always',
   });
 
   const activeExams = exams.filter(e => !e.already_taken);
@@ -59,9 +60,9 @@ const ExaminationsPage: React.FC = () => {
       <div className="bg-black text-white py-8 px-4 sm:px-6 lg:px-8 border-b border-gray-800">
         <div className="max-w-7xl mx-auto">
           <nav className="flex items-center text-sm text-gray-400 mb-4">
-            <a href="#" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
+            <button onClick={() => navigate('/dashboard')} className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
               <Home size={14} /> Home
-            </a>
+            </button>
             <ChevronRight size={14} className="mx-2" />
             <span className="text-white">Exams</span>
           </nav>

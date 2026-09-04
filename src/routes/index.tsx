@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom';
 
 /* ── Layouts ─────────────────────────────────────────────────── */
-import AuthLayout from '../layouts/AuthLayout';
 import DashboardLayout from '../layouts/DashboardLayout';
 import ProtectedRoute from './ProtectedRoute';
 import ErrorPage from '../components/ErrorPage';
@@ -32,9 +31,6 @@ const CoursesPage = lazy(
   () => import('../features/courses/components/CoursesPage'),
 );
 const MarketingPage = lazy(
-  () => import('../features/marketing/components/MarketingPage'),
-);
-const CourseDetailPage = lazy(
   () => import('../features/marketing/components/MarketingPage'),
 );
 const PortfoliosPage = lazy(
@@ -63,6 +59,12 @@ const ExamResults = lazy(
 );
 const ExamReview = lazy(
   () => import('../features/examinations/components/ExamReview'),
+);
+const ReceiptPage = lazy(
+  () => import('../features/receipt/components/ReceiptPage'),
+);
+const GiveawayPage = lazy(
+  () => import('../features/auth/components/GiveawayPage'),
 );
 
 /* ── Loading Fallback ────────────────────────────────────────── */
@@ -103,6 +105,15 @@ const routes: RouteObject[] = [
     element: (
       <Suspended>
         <ResetPasswordPage />
+      </Suspended>
+    ),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/giveaway',
+    element: (
+      <Suspended>
+        <GiveawayPage />
       </Suspended>
     ),
     errorElement: <ErrorPage />,
@@ -152,7 +163,7 @@ const routes: RouteObject[] = [
             path: '/dashboard/courses/:courseId',
             element: (
               <Suspended>
-                <CourseDetailPage />
+                <MarketingPage />
               </Suspended>
             ),
           },
@@ -236,9 +247,12 @@ const routes: RouteObject[] = [
         element: <Navigate to="/dashboard/examinations" replace />,
       },
       {
-        element: <DashboardLayout />,
-        children: [
-        ],
+        path: '/receipt',
+        element: (
+          <Suspended>
+            <ReceiptPage />
+          </Suspended>
+        ),
       },
     ],
   },

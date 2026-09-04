@@ -1,35 +1,44 @@
-import React, { useState, useMemo } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
-  Search, Home, ChevronRight, BookOpen, User,
-  Clock, Star, BarChart3, Heart, Share2,
-  PlayCircle, TrendingUp, Grid3X3, List, X,
-  ChevronDown, SlidersHorizontal, CheckCircle
+  Search, Home, ChevronRight, BookOpen,
+  Clock, BarChart3, Share2,
+  PlayCircle, Grid3X3, List, X,
+  ChevronDown, AlertCircle, Loader2
 } from 'lucide-react';
 import { useCourseStore } from '../../../store/courseStore';
 import { getEnrolledCourses, type Course } from '../../../services/courses.service';
 
 const AllCoursesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const { setActiveCourse, studiedCourseIds } = useCourseStore();
+
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') ?? '');
+
+  useEffect(() => {
+    const q = searchParams.get('q') ?? '';
+    setSearchQuery(q);
+  }, [searchParams]);
   const [activeCategory, setActiveCategory] = useState('All');
   const [sortBy, setSortBy] = useState('newest');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [wishlist, setWishlist] = useState<number[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 500000]);
-  const [visibleCount, setVisibleCount] = useState(6);
-  const [toast, setToast] = useState<string | null>(null);
 
-  const showToast = (msg: string) => {
-    setToast(msg);
-    setTimeout(() => setToast(null), 3000);
+  const { data: courses = [], isLoading, isError, refetch } = useQuery({
+    queryKey: ['enrolled-courses'],
+    queryFn: getEnrolledCourses,
+    staleTime: 0,
+  });
+
+  const handleStudyCourse = (course: Course) => {
+    setActiveCourse({ id: course.course_id, title: course.title });
+    navigate(`/dashboard/courses/${course.course_id}`);
   };
 
-  // Extract unique categories and levels
-  const categories = useMemo(() => 
-    ['All', ...Array.from(new Set(initialCourses.map(c => c.category)))],
-    []
+  const categories = useMemo(() =>
+    ['All', ...Array.from(new Set(courses.map(c => c.category)))],
+    [courses]
   );
 
   const sortOptions = [
@@ -141,10 +150,10 @@ const AllCoursesPage: React.FC = () => {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
           <nav className="flex items-center text-sm text-gray-400 mb-6">
-            <Link to="/dashboard" className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
+            <button onClick={() => navigate('/dashboard')} className="hover:text-[#f7941d] transition-colors flex items-center gap-1">
               <Home size={14} />
               Home
-            </Link>
+            </button>
             <ChevronRight size={14} className="mx-2" />
             <span className="text-white">Your Courses</span>
           </nav>
@@ -270,7 +279,7 @@ const AllCoursesPage: React.FC = () => {
 
         <div className="mb-6 flex items-center justify-between">
           <p className="text-gray-600">
-            Showing <span className="font-semibold text-gray-900">{Math.min(visibleCount, filteredCourses.length)}</span> of <span className="font-semibold text-gray-900">{filteredCourses.length}</span> courses
+            Showing <span className="font-semibold text-gray-900">{filteredCourses.length}</span> courses
           </p>
           {(searchQuery || activeCategory !== 'All') && (
             <button
@@ -288,9 +297,8 @@ const AllCoursesPage: React.FC = () => {
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             : "flex flex-col gap-4"
           }>
-            {filteredCourses.slice(0, visibleCount).map((course: typeof initialCourses[0]) => {
-              const discount = Math.round(((course.originalPrice - course.currentPrice) / course.originalPrice) * 100);
-              const isWishlisted = wishlist.includes(course.id);
+            {filteredCourses.map((course) => {
+              const isStudied = studiedCourseIds.includes(course.course_id);
 
               if (viewMode === 'list') {
                 return (
@@ -341,15 +349,16 @@ const AllCoursesPage: React.FC = () => {
                       </div>
 
                       <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-2 sm:min-w-[140px]">
-                        <div className="text-right">
-                          <p className="text-sm text-gray-400 line-through">{formatPrice(course.originalPrice)}</p>
-                          <p className="text-xl font-bold text-gray-900">{formatPrice(course.currentPrice)}</p>
-                        </div>
+                        <p className="text-xl font-bold text-gray-900">{formatPrice(course.amount)}</p>
                         <button
-                          onClick={() => showToast('Enrollment request submitted! Our team will contact you shortly.')}
-                          className="w-full sm:w-auto px-6 py-2 bg-black text-white rounded-lg hover:bg-[#f7941d] hover:text-black transition-colors font-medium"
+                          onClick={() => handleStudyCourse(course)}
+                          className={`w-full sm:w-auto px-6 py-2 rounded-lg font-medium transition-colors ${
+                            isStudied
+                              ? 'bg-[#f7941d] text-black hover:bg-[#e8850a]'
+                              : 'bg-black text-white hover:bg-gray-800'
+                          }`}
                         >
-                          Enroll Now
+                          {isStudied ? 'Continue Studying' : 'Study Now'}
                         </button>
                       </div>
                     </div>
@@ -385,17 +394,11 @@ const AllCoursesPage: React.FC = () => {
                     )}
 
                     <div className="absolute bottom-3 left-3 right-3 flex gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <button
-                        onClick={() => navigate('/dashboard/marketing')}
-                        className="flex-1 bg-white text-black text-sm font-semibold py-2 rounded-lg hover:bg-[#f7941d] transition-colors flex items-center justify-center gap-2"
-                      >
+                      <button className="flex-1 bg-white text-black text-sm font-semibold py-2 rounded-lg hover:bg-[#f7941d] transition-colors flex items-center justify-center gap-2">
                         <PlayCircle size={16} />
                         Preview
                       </button>
-                      <button
-                        onClick={() => { navigator.clipboard.writeText(window.location.origin + '/dashboard/courses'); showToast('Course link copied!'); }}
-                        className="p-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-colors"
-                      >
+                      <button className="p-2 bg-white/20 backdrop-blur-sm text-white rounded-lg hover:bg-white/30 transition-colors">
                         <Share2 size={16} />
                       </button>
                     </div>
@@ -443,23 +446,25 @@ const AllCoursesPage: React.FC = () => {
                       <div className="flex items-end justify-between mb-3">
                         <span className="text-2xl font-black text-gray-900">{formatPrice(course.amount)}</span>
                       </div>
-                      
+
                       <button
-                        onClick={() =>
-                          course.progress > 0
-                            ? navigate('/dashboard/marketing')
-                            : showToast('Enrollment request submitted! Our team will contact you shortly.')
-                        }
+                        onClick={() => handleStudyCourse(course)}
                         className={`w-full font-semibold py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${
-                          course.progress > 0
+                          isStudied
                             ? 'bg-[#f7941d] text-black hover:bg-[#e8850a]'
                             : 'bg-black text-white hover:bg-gray-800'
                         }`}
                       >
-                        {course.progress > 0 ? (
-                          <><PlayCircle size={18} /> Continue Learning</>
+                        {isStudied ? (
+                          <>
+                            <PlayCircle size={18} />
+                            Continue Studying
+                          </>
                         ) : (
-                          <><BookOpen size={18} /> Enroll Now</>
+                          <>
+                            <BookOpen size={18} />
+                            Study Now
+                          </>
                         )}
                       </button>
                     </div>
@@ -486,19 +491,6 @@ const AllCoursesPage: React.FC = () => {
             </button>
           </div>
         )}
-
-        {/* Load More */}
-        {filteredCourses.length > visibleCount && (
-          <div className="mt-12 text-center">
-            <button
-              onClick={() => setVisibleCount(prev => prev + 3)}
-              className="inline-flex items-center gap-2 px-8 py-3 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-[#f7941d] hover:text-[#f7941d] transition-all"
-            >
-              Load More Courses
-              <ChevronDown size={18} />
-            </button>
-          </div>
-        )}
       </main>
 
       <footer className="bg-white border-t border-gray-200 py-8 px-4">
@@ -513,13 +505,6 @@ const AllCoursesPage: React.FC = () => {
           </div>
         </div>
       </footer>
-
-      {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-gray-900 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-4 duration-300">
-          <CheckCircle size={18} className="text-[#f7941d]" />
-          <p className="text-sm font-bold">{toast}</p>
-        </div>
-      )}
     </div>
   );
 };

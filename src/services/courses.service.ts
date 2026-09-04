@@ -16,7 +16,7 @@ export interface Course {
   slug: string;
 }
 
-const COURSE_IMAGE_BASE = 'https://admin.digitalworldtech.academy/uploads/courses/images/';
+const COURSE_IMAGE_BASE = 'https://admin-api.digitalworldtech.academy/uploads/courses/images/';
 
 function withImageUrl(courses: Course[]): Course[] {
   return courses.map(c => ({

@@ -1,8 +1,11 @@
 import React from 'react';
-import { Flag } from 'lucide-react';
 import { useExamStore } from '../store/examStore';
 
-export const QuestionNavigation: React.FC = () => {
+interface QuestionNavigationProps {
+  onNavigate?: () => void;
+}
+
+export const QuestionNavigation: React.FC<QuestionNavigationProps> = ({ onNavigate }) => {
   const { currentExam, session, navigateToQuestion } = useExamStore();
 
   if (!currentExam || !session) return null;
@@ -10,7 +13,7 @@ export const QuestionNavigation: React.FC = () => {
   let questionNumber = 0;
 
   return (
-    <div className="bg-white border-l border-gray-200 w-64 overflow-y-auto">
+    <div className="flex flex-col bg-white border-l border-gray-200 w-64 overflow-y-auto">
       <div className="p-4 border-b border-gray-200 bg-gray-50">
         <h3 className="font-bold text-sm text-gray-900">Question Navigator</h3>
         <div className="flex gap-4 mt-3 text-xs">
@@ -39,7 +42,6 @@ export const QuestionNavigation: React.FC = () => {
                 (Array.isArray(answer.answer) && answer.answer.length > 0) ||
                 (typeof answer.answer === 'string' && answer.answer !== '')
               );
-              const isFlagged = answer?.flagged;
               const isCurrent = session.currentSectionIndex === sectionIndex && 
                                session.currentQuestionIndex === questionIndex;
               
@@ -48,7 +50,7 @@ export const QuestionNavigation: React.FC = () => {
               return (
                 <button
                   key={question.id}
-                  onClick={() => navigateToQuestion(sectionIndex, questionIndex)}
+                  onClick={() => { navigateToQuestion(sectionIndex, questionIndex); onNavigate?.(); }}
                   className={`relative h-10 rounded-lg font-bold text-sm transition-all ${
                     isCurrent
                       ? 'bg-[#f7941d] text-white ring-2 ring-[#f7941d] ring-offset-2'
@@ -58,12 +60,6 @@ export const QuestionNavigation: React.FC = () => {
                   }`}
                 >
                   {questionNumber}
-                  {isFlagged && (
-                    <Flag 
-                      size={12} 
-                      className="absolute -top-1 -right-1 text-yellow-500 fill-yellow-500" 
-                    />
-                  )}
                 </button>
               );
             })}

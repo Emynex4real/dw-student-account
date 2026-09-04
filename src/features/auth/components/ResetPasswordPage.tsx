@@ -2,7 +2,7 @@ import React, { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { resetPassword } from '../api/auth.service';
 import {
-  Eye, EyeOff, ArrowRight, ArrowLeft, Terminal,
+  Eye, EyeOff, ArrowRight, ArrowLeft,
   AlertTriangle, CheckCircle2, ShieldCheck, KeyRound, XCircle,
 } from 'lucide-react';
 
@@ -106,13 +106,8 @@ const ResetPasswordPage: React.FC = () => {
         }} />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-16">
-            <div className="h-10 w-10 bg-[#f7941d] rounded-xl flex items-center justify-center text-black shadow-lg shadow-[#f7941d]/20">
-              <Terminal size={24} strokeWidth={2.5} />
-            </div>
-            <span className="text-2xl font-black tracking-tight text-white">
-              Digital<span className="text-[#f7941d]">World</span>
-            </span>
+          <div className="mb-16">
+            <img src="/logo.png" alt="Digital World Tech Academy" style={{ height: '48px', width: 'auto' }} />
           </div>
 
           <h1 className="text-5xl font-bold text-white leading-[1.15] tracking-tight mb-6">
@@ -151,13 +146,8 @@ const ResetPasswordPage: React.FC = () => {
       <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-16 xl:px-32 relative">
 
         {/* Mobile Logo */}
-        <div className="absolute top-8 left-6 sm:left-16 lg:hidden flex items-center gap-2">
-          <div className="h-8 w-8 bg-[#f7941d] rounded-lg flex items-center justify-center text-black">
-            <Terminal size={18} strokeWidth={2.5} />
-          </div>
-          <span className="text-xl font-black tracking-tight text-black">
-            Digital<span className="text-[#f7941d]">World</span>
-          </span>
+        <div className="absolute top-8 left-6 sm:left-16 lg:hidden">
+          <img src="/logo.png" alt="Digital World Tech Academy" className="h-12 w-auto" />
         </div>
 
         <div className="w-full max-w-md mx-auto">

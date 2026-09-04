@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import type { Exam } from '../types/exam.types';
 import { useExamStore } from '../store/examStore';
-import { validateExamToken } from '../../../services/exams.service';
+import { validateExamToken, startExamSession } from '../../../services/exams.service';
 
 interface ExamInstructionsProps {
   exam: Exam;
@@ -50,7 +50,10 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
     try {
       const result = await validateExamToken(examCode.trim());
       if (result.valid) {
-        startExam(exam);
+        const { started_unix, server_time } = await startExamSession(Number(exam.id));
+        // Use server timestamps so the client timer matches what the server will enforce
+        const elapsedSeconds = Math.max(0, server_time - started_unix);
+        startExam(exam, elapsedSeconds);
         navigate(`/exams/${exam.id}/take`);
       } else {
         setCodeError('Invalid exam code. Please check and try again.');
@@ -135,7 +138,7 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
             <li className="flex items-start gap-3">
               <CheckCircle className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
               <span className="text-gray-700">
-                Switching tabs is monitored. Maximum allowed: <strong>{exam.settings.maxTabSwitches} times</strong>.
+                Switching tabs, minimizing, or leaving this page is <strong>not allowed</strong>. Doing so will automatically submit your exam.
               </span>
             </li>
             {exam.settings.allowBackNavigation && (
@@ -150,12 +153,6 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
               <CheckCircle className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
               <span className="text-gray-700">
                 Your progress is auto-saved every 30 seconds.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle className="text-green-500 flex-shrink-0 mt-0.5" size={20} />
-              <span className="text-gray-700">
-                You can flag questions for review before submitting.
               </span>
             </li>
           </ul>
@@ -280,15 +277,6 @@ export const ExamInstructions: React.FC<ExamInstructionsProps> = ({ exam }) => {
                   Go Back
                 </button>
 
-                <div className="border-t border-dashed border-gray-200 pt-4">
-                  <p className="text-xs text-center text-gray-400 mb-2">Development only</p>
-                  <button
-                    onClick={() => { startExam(exam); navigate(`/exams/${exam.id}/take`); }}
-                    className="w-full py-2.5 text-sm font-medium text-gray-500 border border-dashed border-gray-300 rounded-xl hover:border-gray-400 hover:text-gray-700 transition-colors"
-                  >
-                    Skip Code (Bypass)
-                  </button>
-                </div>
               </div>
             </div>
           </div>

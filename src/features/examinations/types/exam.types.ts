@@ -55,7 +55,6 @@ interface Exam {
 interface Answer {
   questionId: string;
   answer: string | string[];
-  flagged: boolean;
   timeSpent: number;
 }
 
