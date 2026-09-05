@@ -378,7 +378,7 @@ const StudyCoursePage: React.FC = () => {
                         <textarea
                           value={commentInput}
                           onChange={(e) => setCommentInput(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendComment(); } }}
+                          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handlePostComment(); } }}
                           placeholder="Enter your comment here..."
                           className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#f7941d]/50 focus:border-[#f7941d] resize-none h-20 transition-all"
                         />
