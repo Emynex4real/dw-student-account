@@ -5,6 +5,8 @@ import { useCourseStore } from '../store/courseStore';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getNotifications, markAllRead, markOneRead } from '../services/notifications.service';
 import type { Notification } from '../services/notifications.service';
+import { getScholarshipStatus } from '../services/scholarship.service';
+import ScholarshipStatusOverlay from '../components/ScholarshipStatusOverlay';
 import {
   Search, Bell, User, LayoutDashboard, BookOpen,
   Briefcase, Users, Calendar, FileText, LogOut, Menu, X, PlayCircle,
@@ -69,6 +71,16 @@ const DashboardLayout: React.FC = () => {
 
   const notifications: Notification[] = notifData?.notifications ?? [];
   const unreadCount = notifData?.unread_count ?? 0;
+
+  const { data: scholarshipStatus } = useQuery({
+    queryKey: ['scholarship-status'],
+    queryFn: getScholarshipStatus,
+    refetchInterval: 60_000, // poll every 60s — picks up the auto status progression
+  });
+  const isScholarshipBlurred = Boolean(
+    scholarshipStatus?.has_application &&
+    !(scholarshipStatus.status === 'Approved' && scholarshipStatus.acceptance_fee_paid_at)
+  );
 
   const { mutate: readAll } = useMutation({
     mutationFn: markAllRead,
@@ -313,7 +325,10 @@ const DashboardLayout: React.FC = () => {
               <span>You're browsing with a Giveaway account — some features are limited.</span>
             </div>
           )}
-          <Outlet />
+          <div className={isScholarshipBlurred ? 'blur-sm pointer-events-none select-none' : ''}>
+            <Outlet />
+          </div>
+          <ScholarshipStatusOverlay data={scholarshipStatus} />
         </main>
       </div>
 
