@@ -22,12 +22,16 @@ const DashboardPage: React.FC = () => {
     refetchOnMount: true,
   });
 
-  const { data: attendance } = useQuery({
+  const { data: attendance, isLoading: attendanceLoading } = useQuery({
     queryKey: ['attendance-summary'],
     queryFn: getAttendanceSummary,
     staleTime: 0,
     refetchOnMount: true,
   });
+  // Defends against a malformed/incomplete API response (missing `overall`)
+  // still crashing the whole dashboard — falls back to an empty summary.
+  const overall = attendance?.overall ?? { total: 0, attended: 0, percentage: 0 };
+  const breakdown = attendance?.breakdown ?? [];
 
   const passwordChanged = stats ? stats.password_change === 1 : true;
 
@@ -180,18 +184,20 @@ const DashboardPage: React.FC = () => {
                 <p className="text-xs text-gray-500">Your attendance across all enrolled courses</p>
               </div>
             </div>
-            {attendance && (
-              <span className="text-2xl font-black text-gray-900">{attendance.overall.percentage}%</span>
+            {!attendanceLoading && (
+              <span className="text-2xl font-black text-gray-900">{overall.percentage}%</span>
             )}
           </div>
           <div className="p-6">
-            {!attendance ? (
+            {attendanceLoading ? (
               <div className="flex items-center justify-center py-10">
                 <Loader2 size={28} className="animate-spin text-gray-300" />
               </div>
+            ) : breakdown.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-10">No attendance records yet.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {attendance.breakdown.map(b => (
+                {breakdown.map(b => (
                   <div key={b.batch_id} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                     <div className="flex justify-between items-start mb-3">
                       <div>
