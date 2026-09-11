@@ -6,17 +6,17 @@ import PaymentChoiceModal from './PaymentChoiceModal';
 
 const STATUS_COPY: Record<string, { icon: React.ReactNode; heading: string; body: string }> = {
   'Pending': {
-    icon: <Clock size={28} className="text-[#f7941d]" />,
+    icon: <Clock size={32} className="text-[#f7941d]" />,
     heading: 'Application Pending',
-    body: "You'll get a response within 24 hours.",
+    body: "You'll get a response within 24 hours. Be sure to check your email.",
   },
   'Under Review': {
-    icon: <Clock size={28} className="text-[#f7941d]" />,
+    icon: <Clock size={32} className="text-[#f7941d]" />,
     heading: 'Application Under Review',
-    body: "You'll get a response within 24 hours.",
+    body: "You'll get a response within 24 hours. Be sure to check your email.",
   },
   'Rejected': {
-    icon: <XCircle size={28} className="text-red-500" />,
+    icon: <XCircle size={32} className="text-red-500" />,
     heading: 'Application Not Approved',
     body: 'Unfortunately your scholarship application was not approved this time.',
   },
@@ -42,32 +42,32 @@ export default function ScholarshipStatusOverlay({ data, user }: ScholarshipStat
 
   const isApproved = data.status === 'Approved';
   const copy = isApproved
-    ? { icon: <CheckCircle2 size={28} className="text-green-500" />, heading: 'Scholarship Approved!', body: `Pay your ₦11,265 acceptance fee to continue.` }
+    ? { icon: <CheckCircle2 size={32} className="text-green-500" />, heading: 'Scholarship Approved!', body: `Pay your ₦11,265 acceptance fee to continue.` }
     : STATUS_COPY[data.status || 'Pending'];
 
   const applicantName = [user?.firstName, user?.lastName].filter(Boolean).join(' ');
 
   return (
     <>
-      <div className="fixed inset-0 lg:left-64 z-40 flex items-center justify-center bg-white/70 backdrop-blur-sm">
-        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 max-w-sm w-full mx-4 p-8 text-center">
-          <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center">
+      <div className="fixed inset-0 lg:left-64 z-40 flex items-center justify-center bg-white/70 backdrop-blur-sm p-4">
+        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 max-w-sm sm:max-w-md md:max-w-lg w-full p-6 sm:p-10 md:p-12 text-center">
+          <div className="mx-auto mb-5 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center">
             {copy.icon}
           </div>
-          <h3 className="text-lg font-bold text-gray-900 mb-2">{copy.heading}</h3>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{copy.heading}</h3>
           {(applicantName || user?.email) && (
-            <div className="mb-3 pb-3 border-b border-gray-100">
-              {applicantName && <p className="text-sm font-semibold text-gray-900">{applicantName}</p>}
-              {user?.email && <p className="text-xs text-gray-500">{user.email}</p>}
+            <div className="mb-4 pb-4 border-b border-gray-100">
+              {applicantName && <p className="text-base sm:text-lg font-semibold text-gray-900">{applicantName}</p>}
+              {user?.email && <p className="text-sm sm:text-base text-gray-500 break-words">{user.email}</p>}
             </div>
           )}
-          <p className="text-sm text-gray-500 mb-1">{data.course_title}</p>
-          <p className="text-sm text-gray-600">{copy.body}</p>
+          <p className="text-base sm:text-lg text-gray-500 mb-2">{data.course_title}</p>
+          <p className="text-sm sm:text-base text-gray-600">{copy.body}</p>
 
           {isApproved && (
             <button
               onClick={() => setShowPaymentModal(true)}
-              className="mt-6 w-full px-5 py-3 bg-[#f7941d] text-black rounded-xl font-bold text-sm hover:bg-[#d67e15] transition-all"
+              className="mt-8 w-full px-5 py-3 sm:py-4 bg-[#f7941d] text-black rounded-xl font-bold text-sm sm:text-base hover:bg-[#d67e15] transition-all"
             >
               Proceed to Payment
             </button>
