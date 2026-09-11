@@ -328,7 +328,7 @@ const DashboardLayout: React.FC = () => {
           <div className={isScholarshipBlurred ? 'blur-sm pointer-events-none select-none' : ''}>
             <Outlet />
           </div>
-          <ScholarshipStatusOverlay data={scholarshipStatus} />
+          <ScholarshipStatusOverlay data={scholarshipStatus} user={user} />
         </main>
       </div>
 

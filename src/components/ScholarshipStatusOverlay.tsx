@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Clock, CheckCircle2, XCircle } from 'lucide-react';
 import type { ScholarshipStatus } from '../services/scholarship.service';
+import type { AuthUser } from '../features/auth/types/auth.types';
 import PaymentChoiceModal from './PaymentChoiceModal';
 
 const STATUS_COPY: Record<string, { icon: React.ReactNode; heading: string; body: string }> = {
@@ -23,6 +24,7 @@ const STATUS_COPY: Record<string, { icon: React.ReactNode; heading: string; body
 
 interface ScholarshipStatusOverlayProps {
   data: ScholarshipStatus | undefined;
+  user: AuthUser | null;
 }
 
 // Renders nothing for students with no scholarship application, or once the
@@ -32,7 +34,7 @@ interface ScholarshipStatusOverlayProps {
 // (see the notifications useQuery there) rather than duplicating fetch logic
 // here — the layout also needs this same data to decide whether to blur the
 // Outlet.
-export default function ScholarshipStatusOverlay({ data }: ScholarshipStatusOverlayProps): React.ReactElement | null {
+export default function ScholarshipStatusOverlay({ data, user }: ScholarshipStatusOverlayProps): React.ReactElement | null {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   if (!data?.has_application) return null;
@@ -43,6 +45,8 @@ export default function ScholarshipStatusOverlay({ data }: ScholarshipStatusOver
     ? { icon: <CheckCircle2 size={28} className="text-green-500" />, heading: 'Scholarship Approved!', body: `Pay your ₦11,265 acceptance fee to continue.` }
     : STATUS_COPY[data.status || 'Pending'];
 
+  const applicantName = [user?.firstName, user?.lastName].filter(Boolean).join(' ');
+
   return (
     <>
       <div className="fixed inset-0 lg:left-64 z-40 flex items-center justify-center bg-white/70 backdrop-blur-sm">
@@ -51,6 +55,12 @@ export default function ScholarshipStatusOverlay({ data }: ScholarshipStatusOver
             {copy.icon}
           </div>
           <h3 className="text-lg font-bold text-gray-900 mb-2">{copy.heading}</h3>
+          {(applicantName || user?.email) && (
+            <div className="mb-3 pb-3 border-b border-gray-100">
+              {applicantName && <p className="text-sm font-semibold text-gray-900">{applicantName}</p>}
+              {user?.email && <p className="text-xs text-gray-500">{user.email}</p>}
+            </div>
+          )}
           <p className="text-sm text-gray-500 mb-1">{data.course_title}</p>
           <p className="text-sm text-gray-600">{copy.body}</p>
 
