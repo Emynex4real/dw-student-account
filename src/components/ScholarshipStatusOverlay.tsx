@@ -45,7 +45,7 @@ export default function ScholarshipStatusOverlay({ data }: ScholarshipStatusOver
 
   return (
     <>
-      <div className="absolute inset-0 z-40 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+      <div className="fixed inset-0 lg:left-64 z-40 flex items-center justify-center bg-white/70 backdrop-blur-sm">
         <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 max-w-sm w-full mx-4 p-8 text-center">
           <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center">
             {copy.icon}
