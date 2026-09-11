@@ -66,6 +66,9 @@ const ReceiptPage = lazy(
 const GiveawayPage = lazy(
   () => import('../features/auth/components/GiveawayPage'),
 );
+const ScholarshipHandoffPage = lazy(
+  () => import('../features/auth/components/ScholarshipHandoffPage'),
+);
 
 /* ── Loading Fallback ────────────────────────────────────────── */
 const PageLoader: React.FC = () => (
@@ -114,6 +117,15 @@ const routes: RouteObject[] = [
     element: (
       <Suspended>
         <GiveawayPage />
+      </Suspended>
+    ),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/scholarship-login',
+    element: (
+      <Suspended>
+        <ScholarshipHandoffPage />
       </Suspended>
     ),
     errorElement: <ErrorPage />,

@@ -94,6 +94,34 @@ export async function resetPassword({ token, password }: { token: string; passwo
 }
 
 /**
+ * Auto-login via a single-use scholarship handoff token, minted right after
+ * a scholarship application succeeds — drops the applicant straight into
+ * their dashboard without re-typing the password they just chose.
+ * GET /auth/scholarship-handoff?token=...
+ */
+export async function scholarshipHandoffLogin(token: string): Promise<AuthResponse> {
+  const { data } = await api.get<ApiLoginResponse>(
+    `/auth/scholarship-handoff?token=${encodeURIComponent(token)}`,
+  );
+
+  const nameParts = data.user.username.trim().split(' ');
+  const firstName = nameParts[0] ?? data.user.username;
+  const lastName = nameParts.slice(1).join(' ') || '';
+
+  return {
+    token: data.token,
+    user: {
+      id: String(data.user.id),
+      firstName,
+      lastName,
+      email: data.user.email,
+      role: 'student',
+      avatarUrl: data.user.image || undefined,
+    },
+  };
+}
+
+/**
  * Auto-login via giveaway link.
  * GET /auth/giveaway?token=DigitalWorldTechAcademy&year=2
  */
