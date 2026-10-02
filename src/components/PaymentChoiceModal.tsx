@@ -4,13 +4,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../store/authStore';
 import { verifyPaystackPayment } from '../services/scholarship.service';
 
-// TODO: replace with the real bank details and WhatsApp number before this ships.
 const BANK_DETAILS = {
-  bankName: 'REPLACE_ME_BANK_NAME',
-  accountNumber: 'REPLACE_ME_ACCOUNT_NUMBER',
-  accountName: 'Digital World Tech Academy',
+  bankName: 'Moniepoint',
+  accountNumber: '5495591922',
+  accountName: 'Digital World Tech Academy Online',
 };
-const WHATSAPP_NUMBER = 'REPLACE_ME_WHATSAPP_NUMBER'; // digits only, e.g. 2347063963246
+const WHATSAPP_NUMBER = '2349069601693'; // digits only, for wa.me links
 
 const ACCEPTANCE_FEE_NAIRA = 11265;
 const ACCEPTANCE_FEE_KOBO = ACCEPTANCE_FEE_NAIRA * 100;
