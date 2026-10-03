@@ -7,6 +7,7 @@ import { getNotifications, markAllRead, markOneRead } from '../services/notifica
 import type { Notification } from '../services/notifications.service';
 import { getScholarshipStatus } from '../services/scholarship.service';
 import ScholarshipStatusOverlay from '../components/ScholarshipStatusOverlay';
+import ScholarshipCongratsModal from '../components/ScholarshipCongratsModal';
 import {
   Search, Bell, User, LayoutDashboard, BookOpen,
   Briefcase, Users, Calendar, FileText, LogOut, Menu, X, PlayCircle,
@@ -329,6 +330,7 @@ const DashboardLayout: React.FC = () => {
             <Outlet />
           </div>
           <ScholarshipStatusOverlay data={scholarshipStatus} user={user} />
+          <ScholarshipCongratsModal data={scholarshipStatus} firstName={user?.firstName} />
         </main>
       </div>
 
