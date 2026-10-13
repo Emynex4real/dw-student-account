@@ -11,7 +11,8 @@ export interface Profile {
 }
 
 export function getProfileImageUrl(filename: string): string {
-  return filename ? STUDENT_IMAGE_BASE + filename : '';
+  if (!filename) return '';
+  return /^https?:\/\//i.test(filename) ? filename : STUDENT_IMAGE_BASE + filename;
 }
 
 export async function getProfile(): Promise<Profile> {

@@ -16,7 +16,8 @@ export interface Portfolio {
 }
 
 export function getStudentImageUrl(filename: string): string {
-  return filename ? STUDENT_IMAGE_BASE + filename : '';
+  if (!filename) return '';
+  return /^https?:\/\//i.test(filename) ? filename : STUDENT_IMAGE_BASE + filename;
 }
 
 export async function getPortfolios(): Promise<Portfolio[]> {

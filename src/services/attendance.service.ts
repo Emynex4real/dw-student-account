@@ -13,6 +13,8 @@ export interface BatchReplay {
   title: string;
   video_url: string;
   class_date: string | null;
+  slide_url: string | null;
+  dataset_url: string | null;
   created_at: string;
   attendance_type: 'live' | 'replay' | null;
   marked_at: string | null;

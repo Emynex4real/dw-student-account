@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Home, ChevronRight, PlayCircle, Calendar, ChevronDown, BookOpen,
   Upload, FileText, X, CheckCircle, Loader2, AlertTriangle, Clock,
-  RefreshCw, Tag,
+  RefreshCw, Tag, Presentation, Database,
 } from 'lucide-react';
 import { getEnrolledBatches } from '../../../services/classes.service';
 import { getBatchReplays, markReplayAttendance } from '../../../services/attendance.service';
@@ -454,6 +454,31 @@ const ClassReplaysPage: React.FC = () => {
                       </span>
                     )}
                   </div>
+
+                  {(activeReplay.slide_url || activeReplay.dataset_url) && (
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {activeReplay.slide_url && (
+                        <a
+                          href={activeReplay.slide_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-200 hover:border-[#f7941d] hover:bg-[#f7941d]/5 rounded-lg text-xs font-medium text-gray-700 hover:text-[#f7941d] transition-colors"
+                        >
+                          <Presentation size={12} /> Slide
+                        </a>
+                      )}
+                      {activeReplay.dataset_url && (
+                        <a
+                          href={activeReplay.dataset_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-200 hover:border-[#f7941d] hover:bg-[#f7941d]/5 rounded-lg text-xs font-medium text-gray-700 hover:text-[#f7941d] transition-colors"
+                        >
+                          <Database size={12} /> Dataset
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
