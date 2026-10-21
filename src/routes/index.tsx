@@ -63,6 +63,9 @@ const ExamReview = lazy(
 const ReceiptPage = lazy(
   () => import('../features/receipt/components/ReceiptPage'),
 );
+const FeedbackPage = lazy(
+  () => import('../features/feedback/components/FeedbackPage'),
+);
 const GiveawayPage = lazy(
   () => import('../features/auth/components/GiveawayPage'),
 );
@@ -216,6 +219,14 @@ const routes: RouteObject[] = [
             element: (
               <Suspended>
                 <ExaminationsPage />
+              </Suspended>
+            ),
+          },
+          {
+            path: '/dashboard/feedback',
+            element: (
+              <Suspended>
+                <FeedbackPage />
               </Suspended>
             ),
           },

@@ -4,7 +4,7 @@ export interface Notification {
   id: number;
   title: string;
   message: string;
-  type: 'course_access' | 'class_reminder' | 'exam' | 'portfolio' | 'announcement';
+  type: 'course_access' | 'class_reminder' | 'exam' | 'portfolio' | 'announcement' | 'feedback';
   is_read: boolean;
   created_at: string;
 }

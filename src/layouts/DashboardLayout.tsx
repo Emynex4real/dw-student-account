@@ -11,7 +11,7 @@ import ScholarshipCongratsModal from '../components/ScholarshipCongratsModal';
 import {
   Search, Bell, User, LayoutDashboard, BookOpen,
   Briefcase, Users, Calendar, FileText, LogOut, Menu, X, PlayCircle,
-  BookMarked, CheckCheck,
+  BookMarked, CheckCheck, MessageSquareHeart,
 } from 'lucide-react';
 
 const staticNavItems = [
@@ -22,6 +22,7 @@ const staticNavItems = [
   { to: '/dashboard/classes', label: 'My Classes', icon: <Users size={20} /> },
   { to: '/dashboard/events', label: 'Events', icon: <Calendar size={20} /> },
   { to: '/dashboard/examinations', label: 'Examinations', icon: <FileText size={20} /> },
+  { to: '/dashboard/feedback', label: 'Feedback', icon: <MessageSquareHeart size={20} /> },
 ];
 
 const DashboardLayout: React.FC = () => {
@@ -99,6 +100,7 @@ const DashboardLayout: React.FC = () => {
     exam:            '📝',
     portfolio:       '💼',
     announcement:    '📣',
+    feedback:        '💬',
   };
 
   function timeAgo(dateStr: string): string {
