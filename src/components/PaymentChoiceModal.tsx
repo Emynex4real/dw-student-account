@@ -59,6 +59,15 @@ const PaymentChoiceModal: React.FC<PaymentChoiceModalProps> = ({ onClose }) => {
         email: user?.email,
         amount: ACCEPTANCE_FEE_KOBO,
         currency: 'NGN',
+        // Every Paystack channel; Paystack only shows the ones enabled on the account for NGN.
+        channels: [
+          'card',
+          'bank',
+          'bank_transfer',
+          'ussd',
+          'qr',
+          'mobile_money',
+        ],
         ref: reference,
         callback: (response: { reference: string }) => {
           verifyPaystackPayment(response.reference)
