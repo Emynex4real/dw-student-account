@@ -3,72 +3,70 @@ import { AlertTriangle, Loader2, X } from 'lucide-react';
 import StarRating from './StarRating';
 import { CATEGORY_LABELS, apiErrorMessage } from './feedbackLabels';
 import { useCreateFeedback, useFeedbackOptions } from '../hooks/useFeedback';
-import type { FeedbackCategory } from '../types/feedback.types';
+import type { FeedbackCategory, StudentType } from '../types/feedback.types';
 
 interface FeedbackFormModalProps {
   onClose: () => void;
 }
 
 const RATED: FeedbackCategory[] = ['course', 'instructor'];
+const STUDENT_TYPES: StudentType[] = ['Physical', 'Online'];
 
 const inputClass =
   'w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f7941d] focus:border-transparent bg-white';
 
 const FeedbackFormModal: React.FC<FeedbackFormModalProps> = ({ onClose }) => {
+  // null = untouched, so the choice follows the account's type until the student picks one
+  const [studentTypeInput, setStudentTypeInput] = useState<StudentType | null>(null);
   const [category, setCategory] = useState<FeedbackCategory>('course');
   const [courseId, setCourseId] = useState<number | null>(null);
   const [batchId, setBatchId] = useState<number | null>(null);
-  const [instructorId, setInstructorId] = useState<number | null>(null);
   const [rating, setRating] = useState<number | null>(null);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
   const [error, setError] = useState('');
 
   const { data: options, isLoading: optionsLoading } = useFeedbackOptions(true);
   const courses = options?.courses ?? [];
+  const studentType = studentTypeInput ?? options?.account_student_type ?? null;
   const createMutation = useCreateFeedback();
 
   const isRated = RATED.includes(category);
   const selectedCourse = courses.find((c) => c.id === courseId);
-  const selectedBatch = selectedCourse?.batches.find((b) => b.id === batchId);
-  const instructors = selectedBatch?.instructors ?? [];
 
   const handleCategoryChange = (next: FeedbackCategory) => {
     setCategory(next);
     if (!RATED.includes(next)) setRating(null);
-    if (next !== 'instructor') setInstructorId(null);
   };
 
   const handleCourseChange = (value: string) => {
     setCourseId(value ? Number(value) : null);
     setBatchId(null);
-    setInstructorId(null);
   };
 
-  const handleBatchChange = (value: string) => {
-    setBatchId(value ? Number(value) : null);
-    setInstructorId(null);
-  };
+  const handleBatchChange = (value: string) => setBatchId(value ? Number(value) : null);
+
+  // Batch is only asked of online students
+  const showBatch = studentType === 'Online';
 
   const handleSubmit = () => {
+    if (!studentType) return setError('Please tell us whether you are a physical or online student.');
     if (isRated && !rating) return setError('Please add a star rating.');
-    if (category === 'course' && !courseId) return setError('Please choose the course this is about.');
-    if (category === 'instructor' && !instructorId) return setError('Please choose the instructor this is about.');
+    if (RATED.includes(category) && !courseId) return setError('Please choose the course this is about.');
     if (subject.trim().length < 3) return setError('Please add a short subject (at least 3 characters).');
     if (message.trim().length < 10) return setError('Please tell us a bit more (at least 10 characters).');
 
     setError('');
     createMutation.mutate(
       {
+        student_type: studentType,
         category,
         subject: subject.trim(),
         message: message.trim(),
         rating: isRated ? rating : null,
         course_id: courseId,
-        batch_id: batchId,
-        instructor_id: category === 'instructor' ? instructorId : null,
-        is_anonymous: isAnonymous,
+        batch_id: showBatch ? batchId : null,
+        instructor_id: null,
       },
       {
         onSuccess: onClose,
@@ -95,6 +93,28 @@ const FeedbackFormModal: React.FC<FeedbackFormModalProps> = ({ onClose }) => {
           )}
 
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">I am a… *</label>
+            <div className="flex gap-2" role="radiogroup" aria-label="Student type">
+              {STUDENT_TYPES.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  role="radio"
+                  aria-checked={studentType === type}
+                  onClick={() => setStudentTypeInput(type)}
+                  className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-colors ${
+                    studentType === type
+                      ? 'bg-black text-[#f7941d] border-black'
+                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  {type === 'Physical' ? 'Physical student' : 'Online student'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">What is this about? *</label>
             <div className="flex flex-wrap gap-2">
               {(Object.keys(CATEGORY_LABELS) as FeedbackCategory[]).map((key) => (
@@ -114,7 +134,7 @@ const FeedbackFormModal: React.FC<FeedbackFormModalProps> = ({ onClose }) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className={`grid grid-cols-1 gap-4 ${showBatch ? 'sm:grid-cols-2' : ''}`}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Course {category === 'course' || category === 'instructor' ? '*' : '(optional)'}
@@ -130,9 +150,10 @@ const FeedbackFormModal: React.FC<FeedbackFormModalProps> = ({ onClose }) => {
               </select>
             </div>
 
+            {showBatch && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Batch {category === 'instructor' ? '*' : '(optional)'}
+                Batch (optional)
               </label>
               <select
                 value={batchId ?? ''}
@@ -144,24 +165,8 @@ const FeedbackFormModal: React.FC<FeedbackFormModalProps> = ({ onClose }) => {
                 {selectedCourse?.batches.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
               </select>
             </div>
+            )}
           </div>
-
-          {category === 'instructor' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Instructor *</label>
-              <select
-                value={instructorId ?? ''}
-                onChange={(e) => setInstructorId(e.target.value ? Number(e.target.value) : null)}
-                disabled={!selectedBatch}
-                className={inputClass}
-              >
-                <option value="">
-                  {!selectedBatch ? 'Choose a batch first…' : instructors.length ? 'Select an instructor…' : 'No instructor assigned to this batch'}
-                </option>
-                {instructors.map((i) => <option key={i.id} value={i.id}>{i.name}</option>)}
-              </select>
-            </div>
-          )}
 
           {isRated && (
             <div>
@@ -194,18 +199,6 @@ const FeedbackFormModal: React.FC<FeedbackFormModalProps> = ({ onClose }) => {
             />
           </div>
 
-          <label className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isAnonymous}
-              onChange={(e) => setIsAnonymous(e.target.checked)}
-              className="mt-0.5 h-4 w-4 accent-[#f7941d]"
-            />
-            <span className="text-sm text-gray-600">
-              <span className="font-semibold text-gray-900">Hide my name from staff.</span>{' '}
-              Staff can still reply here, but won't see who sent it.
-            </span>
-          </label>
         </div>
 
         <div className="p-6 pt-0 flex justify-end gap-3">

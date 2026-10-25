@@ -1,9 +1,11 @@
 export type FeedbackCategory = 'course' | 'instructor' | 'platform' | 'payment' | 'other';
 export type FeedbackStatus = 'open' | 'in_review' | 'resolved' | 'closed';
+export type StudentType = 'Physical' | 'Online';
 
 export interface Feedback {
   id: number;
   matric_no: string | null;
+  student_type: StudentType | null;
   category: FeedbackCategory;
   course_id: number | null;
   batch_id: number | null;
@@ -53,9 +55,12 @@ export interface FeedbackCourseOption {
 
 export interface FeedbackOptions {
   courses: FeedbackCourseOption[];
+  /** From the student's account — pre-selects the form, the student can change it */
+  account_student_type: StudentType;
 }
 
 export interface CreateFeedbackPayload {
+  student_type: StudentType;
   category: FeedbackCategory;
   subject: string;
   message: string;
@@ -63,5 +68,4 @@ export interface CreateFeedbackPayload {
   course_id: number | null;
   batch_id: number | null;
   instructor_id: number | null;
-  is_anonymous: boolean;
 }
