@@ -63,7 +63,10 @@ export function getVideoSrc(lecture: FirstLecture): { type: 'iframe' | 'video' |
     const src = match ? match[1] : '';
     return { type: 'iframe', src };
   }
-  return { type: 'video', src: VIDEO_BASE + lecture.video };
+  // `video` is either a full URL (uploaded to Cloudinary) or a bare filename served from
+  // admin-api's static uploads/courses/videos/ folder (local-disk fallback).
+  const src = /^https?:\/\//i.test(lecture.video) ? lecture.video : VIDEO_BASE + lecture.video;
+  return { type: 'video', src };
 }
 
 export async function getLectures(courseSlug: string): Promise<LecturesResponse> {
